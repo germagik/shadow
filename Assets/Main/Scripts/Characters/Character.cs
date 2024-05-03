@@ -1,39 +1,131 @@
+using System;
 using UnityEngine;
 using Utils;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Character : MonoBehaviour
 {
-    [SerializeField] protected float _startingWalkVelocity = 2f;
-    [SerializeField] protected float _walkVelocity = 5f;
+    #if UNITY_EDITOR
+    public float velocity = 0;
+    public Vector3 _direction = new();
+    #endif
+    [SerializeField] protected float _startingWalkVelocity = 0.5f;
+    [SerializeField] protected float _walkMaxVelocity = 3f;
     [SerializeField] protected float _walkAcceleration = 1f;
+    [SerializeField] protected float _startingRunVelocity = 2f;
+    [SerializeField] protected float _runMaxVelocity = 7f;
+    [SerializeField] protected float _runAcceleration = 2f;
+    [SerializeField] protected float _startingCrouchVelocity = 0.5f;
+    [SerializeField] protected float _crouchMaxVelocity = 2f;
+    [SerializeField] protected float _crouchAcceleration = 1f;
     [SerializeField] protected float _reaction = 0.1f;
+    [SerializeField] protected GameObject _lantern;
     protected Rigidbody _body;
     protected Animator _animator;
+    protected bool _hasLantern = false;
     protected virtual void Awake() {
         _body = GetComponent<Rigidbody>();
         _animator = GetComponentInChildren<Animator>();
-        _body.constraints = RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationX;
+        _body.constraints = RigidbodyConstraints.FreezeRotation;
+    }
+
+    protected virtual void Update() 
+    {
+        LanternUpdate();
+    }
+
+    protected virtual void LanternUpdate()
+    {
+        float currentWeight = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern);
+        bool equipping = _hasLantern && currentWeight < 1, unequipping = !_hasLantern && currentWeight > 0;
+        if (equipping || unequipping)
+        {
+            float next;
+            if (equipping)
+            {
+                next = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern) + Time.deltaTime;
+                if (next > 1)
+                    next = 1;
+            }
+            else
+            {
+                next = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern) - Time.deltaTime;
+                if (next < 0)
+                    next = 0;
+            }
+            _animator.SetLayerWeight(AnimatorLayerIndexes.Lantern, next);
+        }
+    }
+
+    protected virtual void MoveFixedUpdate(Vector3 direction, float maxVelocity, float startingVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
+    {
+        #if UNITY_EDITOR
+        velocity = _body.velocity.magnitude;
+        _direction = direction;
+        #endif
+        if (direction.magnitude > _reaction)
+        {
+            Vector3 normalizedDirection = direction.normalized;
+            Vector3 relativeDirection = ((transform.forward * normalizedDirection.z) + transform.right * normalizedDirection.x).normalized;
+            _animator.SetFloat(AnimatorParametersNames.DirectionY, direction.z);
+            _animator.SetFloat(AnimatorParametersNames.DirectionX, direction.x);
+            _animator.SetBool(AnimatorParametersNames.IsMoving, true);
+            _animator.SetBool(AnimatorParametersNames.IsRunning, isRunning);
+            _animator.SetBool(AnimatorParametersNames.IsCrouching, isCrouching);
+            if (_body.velocity.magnitude < startingVelocity)
+                _body.velocity = relativeDirection * startingVelocity;
+            if (_body.velocity.magnitude < maxVelocity)
+                _body.velocity += relativeDirection * acceleration;
+            else
+                _body.velocity = relativeDirection * maxVelocity;
+        }
+        else
+        {
+            _body.velocity = Vector3.zero;
+            _animator.SetFloat(AnimatorParametersNames.DirectionY, 0);
+            _animator.SetFloat(AnimatorParametersNames.DirectionX, 0);
+            _animator.SetBool(AnimatorParametersNames.IsMoving, false);
+            _animator.SetBool(AnimatorParametersNames.IsRunning, false);
+            _animator.SetBool(AnimatorParametersNames.IsCrouching, false);
+        }
     }
 
     public virtual void WalkFixedUpdate(float leftRight, float forwardBackward) 
     {
-        Vector3 direction = new(leftRight, 0, forwardBackward);
-        if (direction.magnitude >= _reaction)
+        MoveFixedUpdate(new Vector3(leftRight, 0, forwardBackward), _walkMaxVelocity, _startingWalkVelocity, _walkAcceleration);
+    }
+
+    public virtual void RunFixedUpdate(float leftRight, float forwardBackward) 
+    {
+        MoveFixedUpdate(new Vector3(leftRight, 0, forwardBackward), _runMaxVelocity, _startingRunVelocity, _runAcceleration, true);
+    }
+
+    public virtual void MoveCrouchFixedUpdate(float leftRight, float forwardBackward) 
+    {
+        MoveFixedUpdate(new Vector3(leftRight, 0, forwardBackward), _crouchMaxVelocity, _startingCrouchVelocity, _crouchAcceleration, false, true);
+    }
+
+    public virtual void CrouchFixedUpdate()
+    {
+        _animator.SetBool(AnimatorParametersNames.IsCrouching, true);
+    }
+
+    public virtual void StandFixedUpdate()
+    {
+        _animator.SetBool(AnimatorParametersNames.IsCrouching, false);
+    }
+
+    public virtual void ToggleLantern()
+    {
+        float currentWeight = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern);
+        bool equipping = _hasLantern && currentWeight < 1, unequipping = !_hasLantern && currentWeight > 0;
+        if (!equipping && !unequipping)
         {
-            Vector3 normalizedDirection = direction.normalized;
-            _animator.SetFloat(AnimatorParametersNames.DirectionY, forwardBackward);
-            _animator.SetFloat(AnimatorParametersNames.DirectionX, leftRight);
-            _animator.SetBool(AnimatorParametersNames.IsWalking, true);
-            if (_body.velocity.magnitude < _startingWalkVelocity)
-                _body.AddRelativeForce(normalizedDirection * _startingWalkVelocity, ForceMode.VelocityChange);
-            else if (_body.velocity.magnitude < _walkVelocity)
-                _body.AddRelativeForce(normalizedDirection * _walkAcceleration, ForceMode.VelocityChange);
-        }
-        else
-        {
-            _animator.SetBool(AnimatorParametersNames.IsWalking, false);
-            _body.velocity = Vector3.zero;
+            _hasLantern = !_hasLantern;
+            if (_hasLantern)
+                _lantern.SetActive(true);
+            else
+                _lantern.SetActive(false);
         }
     }
 }
