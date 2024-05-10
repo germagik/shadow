@@ -19,42 +19,12 @@ public class Character : MonoBehaviour
     [SerializeField] protected float _crouchMaxVelocity = 2f;
     [SerializeField] protected float _crouchAcceleration = 1f;
     [SerializeField] protected float _reaction = 0.1f;
-    [SerializeField] protected GameObject _lantern;
     protected Rigidbody _body;
     protected Animator _animator;
-    protected bool _hasLantern = false;
     protected virtual void Awake() {
         _body = GetComponent<Rigidbody>();
         _animator = GetComponentInChildren<Animator>();
         _body.constraints = RigidbodyConstraints.FreezeRotation;
-    }
-
-    protected virtual void Update() 
-    {
-        LanternUpdate();
-    }
-
-    protected virtual void LanternUpdate()
-    {
-        float currentWeight = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern);
-        bool equipping = _hasLantern && currentWeight < 1, unequipping = !_hasLantern && currentWeight > 0;
-        if (equipping || unequipping)
-        {
-            float next;
-            if (equipping)
-            {
-                next = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern) + Time.deltaTime;
-                if (next > 1)
-                    next = 1;
-            }
-            else
-            {
-                next = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern) - Time.deltaTime;
-                if (next < 0)
-                    next = 0;
-            }
-            _animator.SetLayerWeight(AnimatorLayerIndexes.Lantern, next);
-        }
     }
 
     protected virtual void MoveFixedUpdate(Vector3 direction, float maxVelocity, float startingVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
@@ -115,17 +85,5 @@ public class Character : MonoBehaviour
         _animator.SetBool(AnimatorParametersNames.IsCrouching, false);
     }
 
-    public virtual void ToggleLantern()
-    {
-        float currentWeight = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern);
-        bool equipping = _hasLantern && currentWeight < 1, unequipping = !_hasLantern && currentWeight > 0;
-        if (!equipping && !unequipping)
-        {
-            _hasLantern = !_hasLantern;
-            if (_hasLantern)
-                _lantern.SetActive(true);
-            else
-                _lantern.SetActive(false);
-        }
-    }
+
 }
