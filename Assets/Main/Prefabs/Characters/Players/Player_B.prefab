@@ -2016,6 +2016,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7328346522932519173}
   - component: {fileID: 3360042960038118289}
+  - component: {fileID: 1206178680115099990}
   m_Layer: 0
   m_Name: Mesh_B
   m_TagString: Untagged
@@ -2067,6 +2068,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1206178680115099990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6861261314152308862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58442c5a8efe9e347814177701864179, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _character: {fileID: 1348603616895730800}
+  _leftFoot: {fileID: 4573207599512297627}
+  _rightFoot: {fileID: 7190381328081030948}
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1 &6868617638886264466
 GameObject:
   m_ObjectHideFlags: 0

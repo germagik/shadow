@@ -25,4 +25,15 @@ namespace Utils
         internal static readonly string Crouch = "Crouch";
         internal static readonly string Lantern = "Lantern";
     }
+
+    public static class SurfaceSoundNames
+    {
+        public static readonly string Defoult = "Defoult";
+    }
+
+    public static class StepNames
+    {
+        public static readonly string LeftFoot = "Left";
+        public static readonly string RightFoot = "Right";
+    }
 }

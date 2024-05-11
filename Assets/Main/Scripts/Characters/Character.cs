@@ -2,7 +2,7 @@ using UnityEngine;
 using Utils;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Character : MonoBehaviour
+public abstract class Character : MonoBehaviour
 {
     #if UNITY_EDITOR
     public float velocity = 0;
@@ -25,7 +25,10 @@ public class Character : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         _body.constraints = RigidbodyConstraints.FreezeRotation;
     }
+    public virtual void OnStep(string soundReference)
+    { 
 
+    }
     protected virtual void MoveFixedUpdate(Vector3 direction, float maxVelocity, float startingVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
     {
         #if UNITY_EDITOR
