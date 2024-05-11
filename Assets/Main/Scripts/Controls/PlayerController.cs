@@ -2,7 +2,7 @@ using UnityEngine;
 using Utils;
 
 [RequireComponent(typeof(Character))]
-public class PlaterController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     #if UNITY_EDITOR
     private bool _enabled = true;

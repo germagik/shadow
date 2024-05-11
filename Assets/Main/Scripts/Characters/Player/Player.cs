@@ -14,7 +14,7 @@ public class Player : Character
     protected override void Awake()
     {
         base.Awake();
-        _lantern = GetComponentInChildren<Lantern>();
+        _lantern = GetComponentInChildren<Lantern>(true);
     }
 
     protected virtual void Update() 
