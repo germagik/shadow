@@ -1691,7 +1691,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50626a94551d70e4fa2b3920e852e3fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _soundReference: Defoult
+  _soundReference: Default
 --- !u!64 &986656217
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -27,7 +27,7 @@ public class CharacterAnimator : MonoBehaviour
             Surface surface;
             if (hit.collider.TryGetComponent<Surface>(out surface))
             {
-               _character.OnStep(surface.SoundReference);
+               _character.OnStep(foot,surface.SoundReference);
             }
         }
     }

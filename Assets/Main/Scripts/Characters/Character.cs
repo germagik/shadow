@@ -18,6 +18,8 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float _crouchMaxVelocity = 2f;
     [SerializeField] protected float _crouchAcceleration = 1f;
     [SerializeField] protected float _reaction = 0.1f;
+    [SerializeField] protected SoundEmitter _leftFootSoundEmitter;
+    [SerializeField] protected SoundEmitter _rightFootSoundEmitter;
     protected Rigidbody _body;
     protected Animator _animator;
     protected virtual void Awake() {
@@ -25,9 +27,16 @@ public abstract class Character : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         _body.constraints = RigidbodyConstraints.FreezeRotation;
     }
-    public virtual void OnStep(string soundReference)
+    public virtual void OnStep(string foot, string soundReference)
     { 
-
+        if (foot == StepNames.LeftFoot)
+        {
+            _leftFootSoundEmitter.Emit(soundReference, true, false, 1f);
+        }
+        else if (foot == StepNames.RightFoot)
+        {
+            _rightFootSoundEmitter.Emit(soundReference, true, false, 1f);
+        }
     }
     protected virtual void MoveFixedUpdate(Vector3 direction, float maxVelocity, float startingVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
     {
