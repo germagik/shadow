@@ -750,7 +750,8 @@ GameObject:
   - component: {fileID: 5793939783180490678}
   - component: {fileID: 8542477133804098106}
   - component: {fileID: 5986554155273929828}
-  m_Layer: 0
+  - component: {fileID: 8965981600949449566}
+  m_Layer: 6
   m_Name: FPCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -831,6 +832,20 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2213613751929950633}
   m_Enabled: 1
+--- !u!114 &8965981600949449566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2213613751929950633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff15f54b210018544b57afe9e2719e2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _character: {fileID: 1348603616895730800}
+  _heardMarkPrefab: {fileID: 4461156725623134951, guid: bec8bb967eb92e644982534687ed7cc3, type: 3}
 --- !u!1 &2263489613968814351
 GameObject:
   m_ObjectHideFlags: 0

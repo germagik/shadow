@@ -7,15 +7,30 @@ public class SoundEmitter : MonoBehaviour
 {
     [SerializeField] protected List<SoundConfiguration> _soundConfigurations;
     [SerializeField] protected Sound _soundPrefab;
-    public virtual void Emit(string soundReference, bool world, bool loop, float intensity)
+    [SerializeField] protected GameObject _producer;
+
+    public GameObject Producer
+    {
+        get
+        {
+            return _producer;
+        }
+    }
+    public virtual void Emit(string soundReference, bool child, bool loop, float intensity)
     {
         AudioClip soundClip = RandomClip(soundReference);
-        //Debug.Log(soundReference);
         if (soundClip != null)
         {
-            Sound sound = Instantiate(_soundPrefab,transform,world);
-            sound.Initialize(soundClip,loop,intensity);
-            //Debug.Log(soundReference);
+            Sound sound;
+            if (child)
+            {
+                sound = Instantiate(_soundPrefab, transform);
+            }
+            else
+            {
+                sound = Instantiate(_soundPrefab,transform.position, _soundPrefab.transform.rotation);
+            }
+            sound.Initialize(this, soundClip,loop,intensity);
         }
     }
     protected virtual AudioClip RandomClip (string soundReference)

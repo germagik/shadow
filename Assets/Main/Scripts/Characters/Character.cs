@@ -31,11 +31,11 @@ public abstract class Character : MonoBehaviour
     { 
         if (foot == StepNames.LeftFoot)
         {
-            _leftFootSoundEmitter.Emit(soundReference, true, false, 1f);
+            _leftFootSoundEmitter.Emit(soundReference, false, false, 1f);
         }
         else if (foot == StepNames.RightFoot)
         {
-            _rightFootSoundEmitter.Emit(soundReference, true, false, 1f);
+            _rightFootSoundEmitter.Emit(soundReference, false, false, 1f);
         }
     }
     protected virtual void MoveFixedUpdate(Vector3 direction, float maxVelocity, float startingVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
