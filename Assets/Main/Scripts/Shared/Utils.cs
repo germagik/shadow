@@ -28,7 +28,7 @@ namespace Utils
 
     public static class SurfaceSoundNames
     {
-        public static readonly string Defoult = "Defoult";
+        public static readonly string Default = "Default";
     }
 
     public static class StepNames

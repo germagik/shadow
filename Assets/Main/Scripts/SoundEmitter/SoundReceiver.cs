@@ -1,33 +1,36 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundReceiver : MonoBehaviour
 {
     [SerializeField] protected Character _character;
-    protected List<HeardMark> _marks = new();
     [SerializeField] protected HeardMark _heardMarkPrefab;
-    public void OnHear (Sound sound, SoundEmitter emitter)
+    protected Dictionary<int,HeardMark> _marks = new();
+    public void OnHear(Sound sound, SoundEmitter emitter)
     {
-        HeardMark mark = GetMark(emitter.Producer.GetInstanceID());
+        int producerID = emitter.Producer.GetInstanceID();
+        if (producerID == _character.gameObject.GetInstanceID())
+        {
+            return;
+        }
+        _marks.TryGetValue(producerID, out HeardMark mark);
         if (mark != null)
         {
-            _marks.Remove(mark);
-            Destroy(mark.gameObject);
-        }
-        mark = Instantiate(_heardMarkPrefab, sound.transform.position , _heardMarkPrefab.transform.rotation);
-        mark.Initilize(emitter.Producer.GetInstanceID());
-        _marks.Add(mark);
-    }
-    protected HeardMark GetMark (int producerID)
-    {
-        foreach (HeardMark mark in _marks)
-        {
-            if (mark.ProducerID == producerID)
-            {  
-                return mark; 
+            if (!mark.gameObject.activeSelf)
+            {
+                _marks.Remove(producerID);
+                Destroy(mark.gameObject);
+            }
+            else
+            {
+                mark.transform.position = sound.transform.position;
+                mark.ResetTime();
             }
         }
-        return null;
+        else
+        {
+            mark = Instantiate(_heardMarkPrefab, sound.transform.position , _heardMarkPrefab.transform.rotation);
+            _marks.Add(producerID, mark);
+        }
     }
 }

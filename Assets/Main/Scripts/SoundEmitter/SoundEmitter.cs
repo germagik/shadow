@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,10 +15,10 @@ public class SoundEmitter : MonoBehaviour
             return _producer;
         }
     }
-    public virtual void Emit(string soundReference, bool child, bool loop, float intensity)
+    public virtual void Emit(string soundReference, bool child, bool loop, float intensityFactor)
     {
-        AudioClip soundClip = RandomClip(soundReference);
-        if (soundClip != null)
+        SoundConfiguration soundConfiguration = GetConfiguration(soundReference);
+        if (soundConfiguration != null)
         {
             Sound sound;
             if (child)
@@ -30,16 +29,16 @@ public class SoundEmitter : MonoBehaviour
             {
                 sound = Instantiate(_soundPrefab,transform.position, _soundPrefab.transform.rotation);
             }
-            sound.Initialize(this, soundClip,loop,intensity);
+            sound.Initialize(this, soundConfiguration.RandomClip(), loop, soundConfiguration.Intensity * intensityFactor);
         }
     }
-    protected virtual AudioClip RandomClip (string soundReference)
+    protected virtual SoundConfiguration GetConfiguration(string soundReference)
     {
         foreach (var sound in _soundConfigurations)
         {
-            if (sound.reference == soundReference)
+            if (sound.Reference == soundReference)
             {
-                return sound.clips[UnityEngine.Random.Range(0,sound.clips.Count)];
+                return sound;
             }
         }
         return null;
@@ -49,6 +48,26 @@ public class SoundEmitter : MonoBehaviour
 [Serializable]
 public class SoundConfiguration
 {
-    public string reference;
-    public List<AudioClip> clips;
+    [SerializeField] protected string _reference;
+    public string Reference
+    {
+        get
+        {
+            return _reference;
+        }
+    }
+    [SerializeField] protected float _intensity;
+    public float Intensity
+    {
+        get
+        {
+            return _intensity;
+        }
+    }
+    [SerializeField] protected List<AudioClip> _clips;
+
+    public virtual AudioClip RandomClip()
+    {
+        return _clips[UnityEngine.Random.Range(0,_clips.Count)];
+    }
 }

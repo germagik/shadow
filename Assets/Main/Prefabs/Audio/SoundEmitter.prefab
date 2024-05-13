@@ -45,3 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _soundConfigurations: []
+  _soundPrefab: {fileID: 562716429172108743, guid: 775ef22bfd587314cabe43991d0f2090, type: 3}
+  _producer: {fileID: 0}
+  _intensity: 100

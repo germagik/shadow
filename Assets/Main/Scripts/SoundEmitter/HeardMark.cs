@@ -1,20 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HeardMark : MonoBehaviour
 {
-    protected int _producerID;
+    [SerializeField] protected float _duration = 10f;
+    [SerializeField] protected float _time = 0f;
 
-    public int ProducerID 
+    protected virtual void Update()
     {
-        get 
-        { 
-            return _producerID; 
-        } 
+        if (_time < _duration)
+        {
+            _time += Time.deltaTime;
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
     }
-    public void Initilize (int producerID)
+
+    public virtual void ResetTime()
     {
-        this._producerID = producerID; 
+        _time = 0f;
     }
 }
