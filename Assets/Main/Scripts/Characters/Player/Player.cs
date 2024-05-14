@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Utils;
@@ -55,6 +56,53 @@ public class Player : Character
                 _lantern.gameObject.SetActive(true);
             else
                 _lantern.gameObject.SetActive(false);
+        }
+    }
+
+    public virtual void AddItem(Item item)
+    {
+       _items.Add(item);
+    }
+    public virtual void AddPrimaryItem(PrimaryItem primaryItem)
+    {
+        _primaryItems.Add(primaryItem);
+    }
+
+   public virtual void AddMatches(Matches matches)
+    {
+        foreach(Item item in _items)
+        {
+            if (item is Matches matchesItem)
+            {
+                matchesItem.Add(matches);
+                return;
+            }
+        }
+        _items.Add(matches);
+    }
+
+    public virtual void AddSalt(Salt salt)
+    {
+        foreach(Item item in _items)
+        {
+            if (item is Salt saltItem)
+            {
+                saltItem.Add(salt);
+                return;
+            }
+        }
+        _items.Add(salt);
+    }
+
+    public virtual void AddPage(SpellPage spellPage)
+    {
+        foreach (PrimaryItem primaryItem in _primaryItems)
+        {
+            if(primaryItem is SpellsBook spellsBook)
+            {
+                spellsBook.Add(spellPage);
+                return;
+            }
         }
     }
 }

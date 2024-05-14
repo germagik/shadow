@@ -24,6 +24,7 @@ namespace Utils
         public static readonly string Run = "Run";
         internal static readonly string Crouch = "Crouch";
         internal static readonly string Lantern = "Lantern";
+        internal static readonly string Pick = "Pick";
     }
 
     public static class SurfaceSoundNames

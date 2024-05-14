@@ -1,11 +1,8 @@
-
-using Unity.VisualScripting;
-
-public class PrimaryItem : Item
+public class SpellPage : PrimaryItem
 {
     public override void PickedBy(Player player)
     {
-        player.AddPrimaryItem(this);
+        player.AddPage(this);
         gameObject.SetActive(false);
     }
 }

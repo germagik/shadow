@@ -13,8 +13,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] protected Camera _camera;
     [SerializeField] protected Transform _lookAt;
     [SerializeField] protected float _lookSensitivity = 2f;
+    [SerializeField] protected LayerMask _itemMask;
+    [SerializeField] protected float _itemDistance = 20f;
     private Player _player;
-    private float _verticalRotation = 0f;
+    private float _verticalRotation = 0f; 
     protected virtual void Awake() {
         _player = GetComponent<Player>();
     }
@@ -32,6 +34,7 @@ public class PlayerController : MonoBehaviour
         {
         #endif
         LookUpdate();
+        PickUpdate();
         #if UNITY_EDITOR
         }
         if (Input.GetKeyDown(KeyCode.Space)) {
@@ -64,6 +67,24 @@ public class PlayerController : MonoBehaviour
 
         _player.transform.Rotate(Vector3.up * inputX);
         _camera.transform.LookAt(_lookAt);
+    }
+    protected virtual void PickUpdate()
+    {
+        if(Input.GetAxisRaw(InputAxesNames.Pick) != 0)
+        {
+            Debug.Log("Pick E");
+            Ray pickRay = new(_camera.transform.position, _camera.transform.forward);
+            if(Physics.Raycast(pickRay, out RaycastHit itemHit, _itemDistance, _itemMask))
+            {
+                Debug.Log("Ray cast");
+                if(itemHit.collider.TryGetComponent(out Item item))
+                {
+                    item.PickedBy(_player);
+                    Debug.Log("HIT");
+
+                }
+            }
+        }
     }
 
     protected virtual void ToggleLanternUpdate()

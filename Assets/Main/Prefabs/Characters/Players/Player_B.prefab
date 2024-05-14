@@ -2284,6 +2284,10 @@ MonoBehaviour:
   _camera: {fileID: 8542477133804098106}
   _lookAt: {fileID: 8523533188999667226}
   _lookSensitivity: 2
+  _itemMask:
+    serializedVersion: 2
+    m_Bits: 128
+  _itemDistance: 9000
 --- !u!1 &7200878918253357853
 GameObject:
   m_ObjectHideFlags: 0
