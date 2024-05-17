@@ -10,13 +10,7 @@ public class Player : Character
     protected List<Item> _items = new();
     protected List<PrimaryItem> _primaryItems = new();
     protected bool _equippedLantern = false;
-    private Lantern _lantern;
-
-    protected override void Awake()
-    {
-        base.Awake();
-        _lantern = GetComponentInChildren<Lantern>(true);
-    }
+    [SerializeField] protected GameObject _lantern;
 
     protected virtual void Update() 
     {
@@ -53,9 +47,9 @@ public class Player : Character
         {
             _equippedLantern = !_equippedLantern;
             if (_equippedLantern)
-                _lantern.gameObject.SetActive(true);
+                _lantern.SetActive(true);
             else
-                _lantern.gameObject.SetActive(false);
+                _lantern.SetActive(false);
         }
     }
 
@@ -78,7 +72,9 @@ public class Player : Character
                 return;
             }
         }
-        _items.Add(matches);
+        Matches newMatches = ScriptableObject.CreateInstance<Matches>();
+        newMatches.Add(matches);
+        _items.Add(newMatches);
     }
 
     public virtual void AddSalt(Salt salt)
@@ -91,7 +87,9 @@ public class Player : Character
                 return;
             }
         }
-        _items.Add(salt);
+        Salt newSalt = ScriptableObject.CreateInstance<Salt>();
+        newSalt.Add(salt);
+        _items.Add(newSalt);
     }
 
     public virtual void AddPage(SpellPage spellPage)
@@ -104,5 +102,30 @@ public class Player : Character
                 return;
             }
         }
+    }
+
+    protected override void DoMove(Vector3 relativeDirection, float maxVelocity, float acceleration)
+    {
+        if (_body.velocity.sqrMagnitude < Math.Pow(maxVelocity, 2))
+        {
+            _body.velocity += relativeDirection * acceleration;
+        }
+        else
+        {
+            _body.velocity = relativeDirection * maxVelocity;
+        }
+    }
+
+    protected override void DoStay()
+    {
+        _body.velocity = Vector3.zero;
+    }
+
+    public override void OnHear(HeardMark mark)
+    {
+    }
+
+    public override void OnSight(SightMark mark)
+    {
     }
 }

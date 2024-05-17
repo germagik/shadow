@@ -31165,14 +31165,14 @@ AnimationClip:
   m_Events:
   - time: 0.26666668
     functionName: OnStep
-    data: Left
+    data: LeftWalk
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.75
     functionName: OnStep
-    data: Right
+    data: RightWalk
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

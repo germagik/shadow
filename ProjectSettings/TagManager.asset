@@ -12,11 +12,11 @@ TagManager:
   - Water
   - UI
   - SoundReceivers
-  - Items
-  - 
-  - 
-  - 
-  - 
+  - Pickable
+  - SightPoints
+  - Wall
+  - Enemies
+  - Player
   - 
   - 
   - 

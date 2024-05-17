@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using Utils;
 
@@ -6,6 +7,8 @@ public class PlayerController : MonoBehaviour
 {
     #if UNITY_EDITOR
     private bool _enabled = true;
+    public float axisH = 0f;
+    public float axisV = 0f;
     #endif
     [SerializeField] protected Transform _verticalPivot;
     [SerializeField] protected float _minVerticalAngle = -75f;
@@ -35,6 +38,10 @@ public class PlayerController : MonoBehaviour
         #endif
         LookUpdate();
         PickUpdate();
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
         #if UNITY_EDITOR
         }
         if (Input.GetKeyDown(KeyCode.Space)) {
@@ -72,16 +79,12 @@ public class PlayerController : MonoBehaviour
     {
         if(Input.GetAxisRaw(InputAxesNames.Pick) != 0)
         {
-            Debug.Log("Pick E");
             Ray pickRay = new(_camera.transform.position, _camera.transform.forward);
             if(Physics.Raycast(pickRay, out RaycastHit itemHit, _itemDistance, _itemMask))
             {
-                Debug.Log("Ray cast");
-                if(itemHit.collider.TryGetComponent(out Item item))
+                if(itemHit.collider.TryGetComponent(out Pickable item))
                 {
                     item.PickedBy(_player);
-                    Debug.Log("HIT");
-
                 }
             }
         }
@@ -101,17 +104,22 @@ public class PlayerController : MonoBehaviour
         float inputY = Input.GetAxis(InputAxesNames.Vertical);
         if (inputX != 0 || inputY != 0)
         {
+            _player.SetDirection(new Vector3(inputX, 0, inputY));
             if (Input.GetAxisRaw(InputAxesNames.Run) != 0)
-                _player.RunFixedUpdate(inputX, inputY);
+                _player.Run();
             else if (Input.GetAxisRaw(InputAxesNames.Crouch) != 0)
-                _player.MoveCrouchFixedUpdate(inputX, inputY);
+                _player.WalkCrouch();
             else
-                _player.WalkFixedUpdate(inputX, inputY);
+                _player.Walk();
+        }
+        else
+        {
+            _player.Stay();
         }
 
         if (Input.GetAxisRaw(InputAxesNames.Crouch) != 0)
-            _player.CrouchFixedUpdate();
+            _player.Crouch();
         else
-            _player.StandFixedUpdate();
+            _player.Stand();
     }
 }

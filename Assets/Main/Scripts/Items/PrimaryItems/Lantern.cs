@@ -1,9 +1,10 @@
 
 using UnityEngine;
 
+[CreateAssetMenu(menuName = "Items/Lantern")]
 public class Lantern : PrimaryItem
 {
-    protected float _maxDuration = 300f;
-    protected float _duration = 0f;
-    protected bool _fired;
+    [SerializeField] protected float _maxDuration = 300f;
+    [SerializeField] protected float _duration = 0f;
+    [SerializeField] protected bool _fired;
 }

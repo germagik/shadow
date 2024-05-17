@@ -1,0 +1,25 @@
+Hello and welcome!
+
+This super pack contains 110 unique crosshair graphics in 3 different easy-to-use formats!
+
+Formats:
+PNG on a solid black background, intended as a mask to determine alpha, aka Black = invisible, White = visible.
+PNG on a transparent background, to be used as is. Crosshair itself solid with no transluscency at all.
+PNG on a transparent background, to be used as is. Crosshair itself partially transluscent. <<< This is the one you're most likely going to use.
+
+Image Size: 
+32x32px
+
+Use them in any 3D or 2D game either as a crosshair to show a character's aim or to use it as a replacement graphic for the mouse cursor.
+
+--
+
+License:
+
+CC-BY 4.0
+Reactorcore
+http://www.reactorcoregames.com
+
+This work © 2024 by Reactorcore is licensed under CC BY 4.0. To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/
+
+(It means you can use them anywhere, even commercially. You only need to mention me (Reactorcore) and my website in the credits.)

@@ -1,7 +1,7 @@
-
-using System;
 using System.Collections.Generic;
+using UnityEngine;
 
+[CreateAssetMenu(menuName = "Items/SpellsBook")]
 public class SpellsBook : PrimaryItem
 {
     protected List<SpellPage> _pages = new ();

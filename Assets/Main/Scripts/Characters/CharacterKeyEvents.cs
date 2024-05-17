@@ -14,11 +14,11 @@ public class CharacterKeyEvents : MonoBehaviour
         {
             direction = Vector3.down
         };
-        if (foot == StepNames.LeftFoot)
+        if (StepNames.IsLeft(foot))
         {
             ray.origin = _leftFoot.position;
         }
-        else if (foot == StepNames.RightFoot)
+        else if (StepNames.IsRight(foot))
         {
             ray.origin = _rightFoot.position;
         }

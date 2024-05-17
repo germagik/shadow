@@ -35825,14 +35825,14 @@ AnimationClip:
   m_Events:
   - time: 0.33333334
     functionName: OnStep
-    data: Left
+    data: LeftCrouch
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.75
     functionName: OnStep
-    data: Right
+    data: RightCrouch
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

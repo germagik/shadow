@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
+[CreateAssetMenu(menuName = "Items/Salt")]
 public class Salt : Item
 {
     
-    protected float _count;
+    [SerializeField] protected float _count;
     public float Count
     {
         get
@@ -16,7 +16,6 @@ public class Salt : Item
     public override void PickedBy(Player player)
     {
         player.AddSalt(this);
-        gameObject.SetActive(false);
     }
 
     public virtual void Add(Salt salt)

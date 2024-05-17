@@ -1,8 +1,11 @@
-using System;
 
+
+using UnityEngine;
+
+[CreateAssetMenu(menuName = "Items/Matches")]
 public class Matches : Item
 {
-    protected int _count;
+    [SerializeField] protected int _count;
     public int Count
     {
         get
@@ -13,7 +16,6 @@ public class Matches : Item
     public override void PickedBy(Player player)
     {
         player.AddMatches(this);
-        gameObject.SetActive(false);
     }
 
     public virtual void Add(Matches matches)

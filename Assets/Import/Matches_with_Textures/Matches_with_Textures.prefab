@@ -341,7 +341,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7632708429929158379}
   - component: {fileID: 6031947691170071338}
-  - component: {fileID: 6057870947482761220}
+  - component: {fileID: 2708076806054627707}
   m_Layer: 7
   m_Name: Matches_with_Textures
   m_TagString: Untagged
@@ -386,7 +386,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.0047348, y: 0.3754351, z: 1}
   m_Center: {x: -0.0027154684, y: 0.19280046, z: 0}
---- !u!114 &6057870947482761220
+--- !u!114 &2708076806054627707
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -395,9 +395,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5943348688616749393}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 606af27d9949f7e4baa430c5ff4af65d, type: 3}
+  m_Script: {fileID: 11500000, guid: 28fd6ac4599f8e14ea50a548d7e0682f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _item: {fileID: 11400000, guid: 699686bec80c38e4e9ef22645b407ba1, type: 2}
 --- !u!1 &6043100331244976496
 GameObject:
   m_ObjectHideFlags: 0
