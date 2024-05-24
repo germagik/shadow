@@ -442,10 +442,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _character: {fileID: 0}
-  _layerMask:
-    serializedVersion: 2
-    m_Bits: 776
-  _fromLayerMask:
+  _producerLayers:
     serializedVersion: 2
     m_Bits: 0
-  _sightMarkPrefab: {fileID: -3867932421055405175, guid: 0ba2bfbfa2ac44d40a6eee49cb29be4e, type: 3}
+  _perceptionMarkPrefab: {fileID: -3867932421055405175, guid: 0ba2bfbfa2ac44d40a6eee49cb29be4e, type: 3}
+  _sightLayers:
+    serializedVersion: 2
+    m_Bits: 776

@@ -1,8 +1,7 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using Utils;
 
-[RequireComponent(typeof(Character))]
+[RequireComponent(typeof(Player))]
 public class PlayerController : MonoBehaviour
 {
     #if UNITY_EDITOR
@@ -15,9 +14,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] protected float _maxVerticalAngle = 75f;
     [SerializeField] protected Camera _camera;
     [SerializeField] protected Transform _lookAt;
-    [SerializeField] protected float _lookSensitivity = 2f;
-    [SerializeField] protected LayerMask _itemMask;
-    [SerializeField] protected float _itemDistance = 20f;
+    [SerializeField] protected float _cameraSensitivity = 2f;
+    [SerializeField] protected LayerMask _actionLayers;
+    [SerializeField] protected float _actionsDistance = 2f;
     private Player _player;
     private float _verticalRotation = 0f; 
     protected virtual void Awake() {
@@ -37,7 +36,7 @@ public class PlayerController : MonoBehaviour
         {
         #endif
         LookUpdate();
-        PickUpdate();
+        ActionUpdate();
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
@@ -65,8 +64,8 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void LookUpdate()
     {
-        float inputX = Input.GetAxis(InputAxesNames.CameraX) * _lookSensitivity;
-        float inputY = Input.GetAxis(InputAxesNames.CameraY) * _lookSensitivity;
+        float inputX = Input.GetAxis(InputAxesNames.CameraX) * _cameraSensitivity;
+        float inputY = Input.GetAxis(InputAxesNames.CameraY) * _cameraSensitivity;
 
         _verticalRotation -= inputY;
         _verticalRotation = Mathf.Clamp(_verticalRotation, _minVerticalAngle, _maxVerticalAngle);
@@ -75,16 +74,20 @@ public class PlayerController : MonoBehaviour
         _player.transform.Rotate(Vector3.up * inputX);
         _camera.transform.LookAt(_lookAt);
     }
-    protected virtual void PickUpdate()
+    protected virtual void ActionUpdate()
     {
         if(Input.GetAxisRaw(InputAxesNames.Pick) != 0)
         {
-            Ray pickRay = new(_camera.transform.position, _camera.transform.forward);
-            if(Physics.Raycast(pickRay, out RaycastHit itemHit, _itemDistance, _itemMask))
+            Ray actionRay = new(_camera.transform.position, _camera.transform.forward);
+            if(Physics.Raycast(actionRay, out RaycastHit actionHit, _actionsDistance, _actionLayers))
             {
-                if(itemHit.collider.TryGetComponent(out Pickable item))
+                if(actionHit.collider.TryGetComponent(out Pickable item))
                 {
                     item.PickedBy(_player);
+                }
+                if(actionHit.collider.TryGetComponent(out ActionPoint action))
+                {
+                    action.ActionatedBy(_player);
                 }
             }
         }

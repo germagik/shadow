@@ -1,6 +1,3 @@
-
-using System;
-
 public abstract class EnemyState
 {
     public static EnemyState Initial
@@ -42,6 +39,16 @@ public abstract class EnemyState
     }
 
     public virtual void Update(Enemy enemy)
+    {
+        
+    }
+
+    public virtual void OnIn(Enemy enemy)
+    {
+
+    }
+
+    public virtual void OnOut(Enemy enemy)
     {
         
     }

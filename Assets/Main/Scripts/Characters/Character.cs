@@ -64,27 +64,24 @@ public abstract class Character : MonoBehaviour
     protected virtual void Move(float maxVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
     {
         Vector3 normalizedDirection = _direction.normalized;
-        Vector3 relativeDirection = ((transform.forward * normalizedDirection.z) + transform.right * normalizedDirection.x).normalized;
-        DoMove(relativeDirection, maxVelocity, acceleration);
-
-        _animator.SetFloat(AnimatorParametersNames.DirectionY, _direction.z);
-        _animator.SetFloat(AnimatorParametersNames.DirectionX, _direction.x);
+        // _animator.SetFloat(AnimatorParametersNames.DirectionX, normalizedDirection.x);
+        // _animator.SetFloat(AnimatorParametersNames.DirectionY, normalizedDirection.z);
         _animator.SetBool(AnimatorParametersNames.IsMoving, true);
         _animator.SetBool(AnimatorParametersNames.IsRunning, isRunning);
         _animator.SetBool(AnimatorParametersNames.IsCrouching, isCrouching);
+        DoMove(normalizedDirection, maxVelocity, acceleration);
     }
 
-    protected abstract void DoMove(Vector3 relativeDirection, float maxVelocity, float acceleration);
+    protected abstract void DoMove(Vector3 normalizedDirection, float maxVelocity, float acceleration);
 
     public virtual void Stay()
     {
-        DoStay();
         _animator.SetFloat(AnimatorParametersNames.DirectionY, 0);
         _animator.SetFloat(AnimatorParametersNames.DirectionX, 0);
         _animator.SetBool(AnimatorParametersNames.IsMoving, false);
         _animator.SetBool(AnimatorParametersNames.IsRunning, false);
         _animator.SetBool(AnimatorParametersNames.IsCrouching, false);
-
+        DoStay();
     }
 
     protected abstract void DoStay();
@@ -114,6 +111,6 @@ public abstract class Character : MonoBehaviour
         _animator.SetBool(AnimatorParametersNames.IsCrouching, false);
     }
 
-    public abstract void OnHear(HeardMark mark);
-    public abstract void OnSight(SightMark mark);
+    public abstract void OnHear(PerceptionMark mark);
+    public abstract void OnSight(PerceptionMark mark);
 }

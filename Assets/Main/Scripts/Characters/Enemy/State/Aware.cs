@@ -1,7 +1,4 @@
 
-
-using UnityEngine;
-
 public class Aware : EnemyState
 {
     protected static Aware _instance;
@@ -18,7 +15,6 @@ public class Aware : EnemyState
         base.HeardUpdate(enemy);
         if (enemy.CheckHeard())
         {
-            Debug.Log("Alert");
             enemy.SetState(Alert.Instance);
         }
     }
@@ -28,7 +24,6 @@ public class Aware : EnemyState
         base.SightUpdate(enemy);
         if (enemy.CheckSight())
         {
-            Debug.Log("Chasing");
             enemy.SetState(Chasing.Instance);
         }
     }

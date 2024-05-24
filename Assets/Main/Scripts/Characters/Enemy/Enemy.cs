@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using Utils;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : Character
@@ -16,17 +17,24 @@ public class Enemy : Character
     [SerializeField] protected float _alertSightSpeed = 2f;
     [SerializeField] protected float _alertHeardSpeed = 1f;
     [SerializeField] protected float _alertMaxTime = 15f;
+    [SerializeField] protected float _searchMaxTime = 10f;
+    [SerializeField] protected float _boundedMaxTime = 15f;
+    [SerializeField] protected ActionPoint _weakPoint;
+    [SerializeField] protected GameObject _bounded;
     protected float _alertTime = 0f;
+    protected float _searchTime = 0f;
     protected float _randomMaxIdleTime = 0f;
     protected float _idleTime = 0f;
-    [SerializeField] protected Transform _target;
+    protected float _boundedTime = 0f;
+    protected Transform _target;
     protected Transform _currentNode;
-    protected EnemyState _state = EnemyState.Initial;
+    protected EnemyState _state;
     protected NavMeshAgent _agent;
     protected Vector3 _lastDestination;
-    protected Vector3 _deltaPosition;
-    protected HeardMark _lastHeard;
-    protected SightMark _lastSight;
+    protected Vector3 _deltaDirection;
+    protected Vector3 _lastDirection;
+    protected PerceptionMark _lastHeard;
+    protected PerceptionMark _lastSight;
 
     protected override void Awake()
     {
@@ -37,14 +45,16 @@ public class Enemy : Character
         {
             _currentNode = _patrolNodes[0];
         }
+        _lastDirection = transform.position;
+        SetState(EnemyState.Initial);
     }
 
     protected virtual void Start()
     {
-        StartCoroutine(PathFindingUpdate());
+        StartCoroutine(PathFindingRoutine());
     }
 
-    protected virtual IEnumerator PathFindingUpdate()
+    protected virtual IEnumerator PathFindingRoutine()
     {
         if (_target != null && !_target.position.Equals(_lastDestination))
         {
@@ -52,13 +62,16 @@ public class Enemy : Character
             _lastDestination = _target.position;
         }
         yield return new WaitForSeconds(_pathFindingInterval);
-        StartCoroutine(PathFindingUpdate());
+        StartCoroutine(PathFindingRoutine());
     }
-    protected override void DoMove(Vector3 relativeDirection, float maxVelocity, float acceleration)
+    protected override void DoMove(Vector3 normalizedDirection, float maxVelocity, float acceleration)
     {
         _agent.isStopped = false;
-        _agent.acceleration = acceleration;
+        _agent.acceleration = maxVelocity;
         _agent.speed = maxVelocity;
+        Vector3 relativeDirection = (transform.forward - normalizedDirection).normalized;
+        _animator.SetFloat(AnimatorParametersNames.DirectionX, relativeDirection.x);
+        _animator.SetFloat(AnimatorParametersNames.DirectionY, relativeDirection.z);
     }
 
     protected override void DoStay()
@@ -68,11 +81,11 @@ public class Enemy : Character
 
     protected virtual void Update()
     {
-        if (_eyes.HasSight())
+        if (_eyes.HasSight)
         {
             _state.SightUpdate(this);
         }
-        else if (_ears.HasHeard())
+        else if (_ears.HasHeard)
         {
             _state.HeardUpdate(this);
         }
@@ -86,11 +99,11 @@ public class Enemy : Character
     protected virtual void FixedUpdate()
     {
         PositionFixedUpdate();
-        if (_eyes.HasSight())
+        if (_eyes.HasSight)
         {
             _state.SightFixedUpdate(this);
         }
-        else if (_ears.HasHeard())
+        else if (_ears.HasHeard)
         {
             _state.HeardFixedUpdate(this);
         }
@@ -102,18 +115,31 @@ public class Enemy : Character
 
     protected virtual void PositionFixedUpdate()
     {
-        _deltaPosition -= transform.position;
-        SetDirection(_deltaPosition);
+        _deltaDirection = transform.position - _lastDirection;
+        _deltaDirection.y = 0;
+        _deltaDirection = _deltaDirection.normalized;
+        _lastDirection = transform.position;
+        SetDirection(_deltaDirection);
     }
 
     public virtual void SetState(EnemyState state)
     {
+        if (_state != null)
+        {
+            _state.OnOut(this);
+        }
         _state = state;
+        _state.OnIn(this);
     }
 
     public virtual void IdleUpdate()
     {
         Calm();
+        Patrol();
+    }
+
+    protected virtual void Patrol()
+    {
         if (_target != _currentNode)
         {
             _target = _currentNode;
@@ -179,32 +205,33 @@ public class Enemy : Character
 
     public virtual bool CheckHeard()
     {
-        if (!_ears.HasHeard())
+        if (_lastHeard.IsDestroyed())
         {
+            _alertTime = 0;
             return false;
         }
         Stay();
-        var sightDirection = _ears.Closer.transform.position - transform.position;
-        sightDirection.y = 0;
-        transform.LookAt(sightDirection);
-        
-        transform.LookAt(_ears.Closer.transform);
+        var heardDirection = _lastHeard.transform.position - transform.position;
+        heardDirection.y = 0;
+
+        transform.LookAt(heardDirection);
         _alertTime += _alertHeardSpeed * Time.deltaTime;
         return _alertTime >= _alertMaxTime;
     }
 
     public virtual bool CheckSight()
     {
-        if (!_eyes.HasSight())
+        if (_lastSight.IsDestroyed())
         {
+            _alertTime = 0;
             return false;
         }
         Stay();
-        var sightDirection = _eyes.Closer.transform.position - transform.position;
+        var sightDirection = _lastSight.transform.position - transform.position;
         sightDirection.y = 0;
         transform.rotation = Quaternion.LookRotation(sightDirection);
         
-        _eyes.transform.LookAt(_eyes.Closer.transform);
+        _eyes.transform.LookAt(_lastSight.transform);
         _alertTime += _alertSightSpeed * Time.deltaTime;
         return _alertTime >= _alertMaxTime;
     }
@@ -223,19 +250,28 @@ public class Enemy : Character
 
     public virtual void SearchHeard()
     {
-        if (_ears.Closer.IsDestroyed())
+        if (_lastHeard.IsDestroyed())
         {
             return;
         }
-        _ears.Closer.Keep();
-        _target = _ears.Closer.transform;
+        _lastHeard.Pause();
+        _target = _lastHeard.transform;
         if ((_target.position - transform.position).sqrMagnitude < Mathf.Pow(1, 2))
         {
             Stay();
-            _ears.Closer.gameObject.SetActive(false);
+            if (_searchTime < _searchMaxTime)
+            {
+                _searchTime += Time.deltaTime;
+            }
+            else
+            {
+                _lastHeard.gameObject.SetActive(false);
+                _searchTime = 0;
+            }
         }
         else
         {
+            _searchTime = 0;
             Walk();
         }
     }
@@ -246,12 +282,11 @@ public class Enemy : Character
         {
             return;
         }
-        _lastSight.Keep();
+        _lastSight.Pause();
         _target = _lastSight.transform;
         if ((_target.position - transform.position).sqrMagnitude < Mathf.Pow(5, 2))
         {
             Stay();
-            _lastSight.gameObject.SetActive(false);
         }
         else
         {
@@ -259,13 +294,48 @@ public class Enemy : Character
         }
     }
 
-    public override void OnHear(HeardMark mark)
+    public override void OnHear(PerceptionMark mark)
     {
         _lastHeard = mark;
     }
 
-    public override void OnSight(SightMark mark)
+    public override void OnSight(PerceptionMark mark)
     {
         _lastSight = mark;
+    }
+
+    public virtual void ActivateWeakness()
+    {
+        _weakPoint.gameObject.SetActive(true);
+    }
+
+    public virtual void DeactivateWeakness()
+    {
+        _weakPoint.gameObject.SetActive(false);
+    }
+
+    public virtual void OnBounded()
+    {
+        _boundedTime = 0f;
+        _bounded.SetActive(true);
+    }
+
+    public virtual void OnUnbounded()
+    {
+        _boundedTime = 0f;
+        _bounded.SetActive(false);
+    }
+    public virtual bool CheckBounded()
+    {
+        if (_boundedTime < _boundedMaxTime)
+        {
+            _boundedTime += Time.deltaTime;
+            Stay();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

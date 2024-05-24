@@ -2291,11 +2291,11 @@ MonoBehaviour:
   _maxVerticalAngle: 75
   _camera: {fileID: 8542477133804098106}
   _lookAt: {fileID: 8523533188999667226}
-  _lookSensitivity: 2
-  _itemMask:
+  _cameraSensitivity: 2
+  _actionLayers:
     serializedVersion: 2
     m_Bits: 128
-  _itemDistance: 2
+  _actionsDistance: 2
 --- !u!1 &7200878918253357853
 GameObject:
   m_ObjectHideFlags: 0
@@ -4136,6 +4136,10 @@ PrefabInstance:
       value: 1024
       objectReference: {fileID: 0}
     - target: {fileID: 1210351109158697428, guid: 2e67385eef4532d4abb52539127eb2ad, type: 3}
+      propertyPath: _producerLayers.m_Bits
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 1210351109158697428, guid: 2e67385eef4532d4abb52539127eb2ad, type: 3}
       propertyPath: _producerLayerMask.m_Bits
       value: 1024
       objectReference: {fileID: 0}
@@ -4340,6 +4344,10 @@ PrefabInstance:
       objectReference: {fileID: 1348603616895730800}
     - target: {fileID: 8583539884652050887, guid: 3c0920d3b19cf8a4e8fe5cfa863df073, type: 3}
       propertyPath: _fromLayerMask.m_Bits
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 8583539884652050887, guid: 3c0920d3b19cf8a4e8fe5cfa863df073, type: 3}
+      propertyPath: _producerLayers.m_Bits
       value: 1024
       objectReference: {fileID: 0}
     - target: {fileID: 8628902179253163238, guid: 3c0920d3b19cf8a4e8fe5cfa863df073, type: 3}

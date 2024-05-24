@@ -1,87 +1,73 @@
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using Utils;
 
-public class Ears : MonoBehaviour
+public class Ears : Sense
 {
-    [SerializeField] protected Character _character;
-    [SerializeField] protected HeardMark _heardMarkPrefab;
-    [SerializeField] protected LayerMask _producerLayerMask;
-    protected Dictionary<int,HeardMark> _marks = new();
-    public HeardMark Closer
+    public virtual bool HasHeard
     {
         get
         {
-            HeardMark found = null;
-            var marks = _marks.Values;
-            foreach (HeardMark mark in marks)
+            var marks = _marks.Values.ToArray();
+            foreach (PerceptionMark mark in marks)
             {
-                if (!mark.gameObject.activeSelf)
-                {
-                    continue;
-                }
-                found ??= mark;
-                float distance = Vector3.Distance(found.transform.position, _character.transform.position);
-                float currentDistance = Vector3.Distance(mark.transform.position, _character.transform.position);
-                if (currentDistance < distance)
-                {
-                    found = mark;
+                if (mark.gameObject.activeSelf) {
+                    return true;
                 }
             }
-            return found;
-        }
-    }
-    public void OnHear(Sound sound, SoundEmitter emitter)
-    {
-        int producerID = emitter.Producer.GetInstanceID();
-        if (producerID == _character.gameObject.GetInstanceID() || !_producerLayerMask.Includes(emitter.Producer.layer))
-        {
-            return;
-        }
-        _marks.TryGetValue(producerID, out HeardMark mark);
-        if (mark != null)
-        {
-            if (!mark.gameObject.activeSelf)
-            {
-                _marks.Remove(producerID);
-                Destroy(mark.gameObject);
-            }
-            else
-            {
-                mark.transform.position = sound.transform.position;
-                mark.ResetTime();
-                _character.OnHear(mark);
-            }
-        }
-        else
-        {
-            mark = Instantiate(_heardMarkPrefab, sound.transform.position , _heardMarkPrefab.transform.rotation);
-            _character.OnHear(mark);
-            _marks.Add(producerID, mark);
+            return false;
         }
     }
 
+    public void OnHear(Sound sound, SoundEmitter emitter)
+    {
+        SetPerceptionMarkFrom(emitter.Producer, sound.transform);
+        // int producerID = emitter.Producer.GetInstanceID();
+        // if (producerID == _character.gameObject.GetInstanceID() || !_producerLayerMask.Includes(emitter.Producer.layer))
+        // {
+        //     return;
+        // }
+        // _marks.TryGetValue(producerID, out PerceptionMark mark);
+        // if (mark != null)
+        // {
+        //     if (!mark.gameObject.activeSelf)
+        //     {
+        //         _marks.Remove(producerID);
+        //         Destroy(mark.gameObject);
+        //     }
+        //     else
+        //     {
+        //         mark.transform.position = sound.transform.position;
+        //         mark.ResetTime();
+        //         _character.OnHear(mark);
+        //     }
+        // }
+        // else
+        // {
+        //     mark = Instantiate(_heardMarkPrefab, sound.transform.position , _heardMarkPrefab.transform.rotation);
+        //     _marks.Add(producerID, mark);
+        //     _character.OnHear(mark);
+        // }
+    }
+
+    protected override void OnFirstSense(PerceptionMark mark)
+    {
+        _character.OnHear(mark);
+    }
+
+    protected override void OnSense(PerceptionMark mark)
+    {
+        _character.OnHear(mark);
+    }
     protected virtual void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
         var marks = _marks.Values;
-        foreach (HeardMark mark in marks)
+        foreach (PerceptionMark mark in marks)
         {
-            if (mark.gameObject.activeSelf) {
+            if (mark.gameObject.activeSelf)
+            {
                 Gizmos.DrawLine(transform.position, mark.transform.position);
             }
         }
-    }
-
-    public virtual bool HasHeard()
-    {
-        var marks = _marks.Values;
-        foreach (HeardMark mark in marks)
-        {
-            if (mark.gameObject.activeSelf) {
-                return true;
-            }
-        }
-        return false;
     }
 }

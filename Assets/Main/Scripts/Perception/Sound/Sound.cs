@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class Sound : MonoBehaviour
 {
-    [SerializeField] protected LayerMask _layerMask;
+    [SerializeField] protected LayerMask _earsLayers;
     protected AudioSource _audioSource;
     protected SoundEmitter _emittedBy;
     protected virtual void Awake()
@@ -34,8 +34,8 @@ public class Sound : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        Collider[] earsReceivers = Physics.OverlapSphere(transform.position,_audioSource.maxDistance, _layerMask);
-        foreach (Collider receiver in earsReceivers)
+        Collider[] closeEars = Physics.OverlapSphere(transform.position,_audioSource.maxDistance, _earsLayers);
+        foreach (Collider receiver in closeEars)
         {
             if (receiver.TryGetComponent(out Ears ears))
             {

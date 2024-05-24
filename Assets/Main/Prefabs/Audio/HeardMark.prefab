@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1511200463306562083}
-  - component: {fileID: 4461156725623134951}
+  - component: {fileID: 7678941433869892609}
   m_Layer: 0
   m_Name: HeardMark
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4461156725623134951
+--- !u!114 &7678941433869892609
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,6 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7084866153581847157}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 919356966e1676245b65b3029faaf0ba, type: 3}
+  m_Script: {fileID: 11500000, guid: 52def48f69a764c4a81b86842e4e2fd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _duration: 10

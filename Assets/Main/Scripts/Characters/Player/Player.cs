@@ -104,8 +104,11 @@ public class Player : Character
         }
     }
 
-    protected override void DoMove(Vector3 relativeDirection, float maxVelocity, float acceleration)
+    protected override void DoMove(Vector3 normalizedDirection, float maxVelocity, float acceleration)
     {
+        _animator.SetFloat(AnimatorParametersNames.DirectionX, normalizedDirection.x);
+        _animator.SetFloat(AnimatorParametersNames.DirectionY, normalizedDirection.z);
+        Vector3 relativeDirection = ((transform.forward * normalizedDirection.z) + (transform.right * normalizedDirection.x)).normalized;
         if (_body.velocity.sqrMagnitude < Math.Pow(maxVelocity, 2))
         {
             _body.velocity += relativeDirection * acceleration;
@@ -121,11 +124,11 @@ public class Player : Character
         _body.velocity = Vector3.zero;
     }
 
-    public override void OnHear(HeardMark mark)
+    public override void OnHear(PerceptionMark mark)
     {
     }
 
-    public override void OnSight(SightMark mark)
+    public override void OnSight(PerceptionMark mark)
     {
     }
 }

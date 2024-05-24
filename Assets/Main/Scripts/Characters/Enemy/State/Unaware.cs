@@ -26,4 +26,16 @@ public class Unaware : EnemyState
         base.IdleUpdate(enemy);
         enemy.IdleUpdate();
     }
+
+    public override void OnIn(Enemy enemy)
+    {
+        base.OnIn(enemy);
+        enemy.ActivateWeakness();
+    }
+
+    public override void OnOut(Enemy enemy)
+    {
+        base.OnOut(enemy);
+        enemy.DeactivateWeakness();
+    }
 }

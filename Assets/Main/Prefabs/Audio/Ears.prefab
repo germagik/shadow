@@ -67,4 +67,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _character: {fileID: 0}
-  _heardMarkPrefab: {fileID: 4461156725623134951, guid: bec8bb967eb92e644982534687ed7cc3, type: 3}
+  _producerLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  _perceptionMarkPrefab: {fileID: 7678941433869892609, guid: bec8bb967eb92e644982534687ed7cc3, type: 3}

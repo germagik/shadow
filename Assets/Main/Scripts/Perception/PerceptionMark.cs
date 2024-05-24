@@ -1,21 +1,24 @@
 using UnityEngine;
 
-public abstract class PerceptionMark : MonoBehaviour
+public class PerceptionMark : MonoBehaviour
 {
     [SerializeField] protected float _duration = 10f;
     protected float _time = 0f;
-    protected bool _keep = false;
+    protected bool _paused = false;
 
     protected virtual void Update()
     {
+        if (_paused)
+        {
+            return;
+        }
         if (_time < _duration)
         {
             _time += Time.deltaTime;
         }
         else
         {
-            if (!_keep)
-                gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 
@@ -24,8 +27,18 @@ public abstract class PerceptionMark : MonoBehaviour
         _time = 0f;
     }
 
-    public virtual void Keep()
+    public virtual void Pause()
     {
-        _keep = true;
+        _paused = true;
+    }
+
+    public virtual void RefreshPosition(GameObject producer, Transform origin)
+    {
+        transform.position = origin.position;
+    }
+
+    public virtual void Initialize(GameObject producer)
+    {
+        // Does nothing by default
     }
 }
