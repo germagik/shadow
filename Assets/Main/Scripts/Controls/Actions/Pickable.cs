@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class Pickable : MonoBehaviour
+public class Pickable : ActionZone
 {
     [SerializeField] protected Item _item;
 
-    public virtual void PickedBy(Player player)
+    public override void ActionatedBy(Player player)
     {
         _item.PickedBy(player);
         Destroy(gameObject);

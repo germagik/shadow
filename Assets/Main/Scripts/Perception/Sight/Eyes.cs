@@ -7,7 +7,16 @@ using Utils;
 public class Eyes : Sense
 {
     [SerializeField] protected LayerMask _sightLayers;
-    protected List<SightPoint> _closePoints = new();
+    protected List<ActionZone> _actionZones = new();
+    protected List<SightZone> _sightZones = new();
+
+    public virtual bool HasActions
+    {
+        get
+        {
+            return _actionZones.Count > 0;
+        }
+    }
     public virtual bool HasSight
     {
         get 
@@ -15,7 +24,8 @@ public class Eyes : Sense
             var marks = _marks.Values.ToArray();
             foreach (PerceptionMark mark in marks)
             {
-                if (mark.gameObject.activeSelf) {
+                if (mark.gameObject.activeSelf)
+                {
                     return true;
                 }
             }
@@ -31,65 +41,56 @@ public class Eyes : Sense
 
     protected virtual void SightFixedUpdate()
     {
-        foreach (SightPoint point in _closePoints)
+        foreach (SightZone zone in _sightZones)
         {
-            Vector3 direction = point.transform.position - transform.position;
+            Vector3 direction = zone.transform.position - transform.position;
             if (Physics.Raycast(new Ray(transform.position, direction), out RaycastHit hit, float.PositiveInfinity, _sightLayers))
             {
-                if (hit.collider.gameObject.TryGetComponent(out SightPoint sightPoint)) {
-                    OnSight(sightPoint);
+                if (hit.collider.gameObject.TryGetComponent(out SightZone sightZone))
+                {
+                    OnSight(sightZone);
                 }
             }
         }
     }
 
-    protected virtual void OnSight(SightPoint sightPoint)
+    protected virtual void OnSight(SightZone sightZone)
     {
-        SetPerceptionMarkFrom(sightPoint.From, sightPoint.transform);
-        // int fromID = sightPoint.From.GetInstanceID();
-        // if (fromID == _character.gameObject.GetInstanceID())
-        // {
-        //     return;
-        // }
-        // _marks.TryGetValue(fromID, out ChaseMark mark);
-        // if (mark != null)
-        // {
-        //     if (!mark.gameObject.activeSelf)
-        //     {
-        //         _marks.Remove(fromID);
-        //         Destroy(mark.gameObject);
-        //     }
-        //     else
-        //     {
-        //         mark.transform.position = sightPoint.From.transform.position;
-        //         mark.ResetTime();
-        //     }
-        // }
-        // else
-        // {
-        //     mark = Instantiate(_sightMarkPrefab, sightPoint.From.transform.position , _sightMarkPrefab.transform.rotation);
-        //     mark.Initialize(sightPoint.From);
-        //     _marks.Add(fromID, mark);
-        //     _character.OnSight(mark);
-        // }
+        SetPerceptionMarkFrom(sightZone.From, sightZone.transform);
     }
 
     protected virtual void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent(out SightPoint sightPoint)) {
-            if (!_closePoints.Contains(sightPoint))
+        if (other.gameObject.TryGetComponent(out SightZone sightZone))
+        {
+            if (!_sightZones.Contains(sightZone))
             {
-                _closePoints.Add(sightPoint);
+                _sightZones.Add(sightZone);
+            }
+        }
+        if (other.gameObject.TryGetComponent(out ActionZone actionZone))
+        {
+            if (!_actionZones.Contains(actionZone))
+            {
+                _actionZones.Add(actionZone);
             }
         }
     }
 
     protected virtual void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.TryGetComponent(out SightPoint sightPoint)) {
-            if (_closePoints.Contains(sightPoint))
+        if (other.gameObject.TryGetComponent(out SightZone sightZone))
+        {
+            if (_sightZones.Contains(sightZone))
             {
-                _closePoints.Remove(sightPoint);
+                _sightZones.Remove(sightZone);
+            }
+        }
+        if (other.gameObject.TryGetComponent(out ActionZone actionZone))
+        {
+            if (_actionZones.Contains(actionZone))
+            {
+                _actionZones.Remove(actionZone);
             }
         }
     }
@@ -99,21 +100,17 @@ public class Eyes : Sense
         _character.OnSight(mark);
     }
 
-    protected override void OnSense(PerceptionMark mark)
-    {
-        
-    }
-
     protected virtual void OnDrawGizmos()
     {
-        foreach (SightPoint point in _closePoints)
+        foreach (SightZone zone in _sightZones)
         {
-            Vector3 direction = point.transform.position - transform.position;
-            Gizmos.DrawLine(transform.position, point.transform.position);
+            Vector3 direction = zone.transform.position - transform.position;
+            Gizmos.DrawLine(transform.position, zone.transform.position);
             if (Physics.Raycast(new Ray(transform.position, direction), out RaycastHit hit, float.PositiveInfinity, _sightLayers))
             {
-                if (hit.collider.gameObject.TryGetComponent(out SightPoint sightPoint)) {
-                    if (_producerLayers.Includes(sightPoint.From.layer))
+                if (hit.collider.gameObject.TryGetComponent(out SightZone sightZone))
+                {
+                    if (_producerLayers.Includes(sightZone.From.layer))
                     {
                         Gizmos.color = Color.red;
                         Gizmos.DrawLine(transform.position, hit.transform.position);

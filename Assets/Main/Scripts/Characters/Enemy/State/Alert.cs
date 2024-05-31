@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class Alert : EnemyState
 {
-    protected static Alert _instance;
     public static Alert Instance
     {
         get
         {
-            return _instance ??= new();
+            return Instance<Alert>();
         }
     }
 

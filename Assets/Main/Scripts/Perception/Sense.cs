@@ -34,8 +34,14 @@ public abstract class Sense : MonoBehaviour
             return found;
         }
     }
-    protected abstract void OnFirstSense(PerceptionMark mark);
-    protected abstract void OnSense(PerceptionMark mark);
+    protected virtual void OnFirstSense(PerceptionMark mark)
+    {
+        // Does nothing by default
+    }
+    protected virtual void OnSense(PerceptionMark mark)
+    {
+        // Does nothing by default
+    }
     protected virtual void LateUpdate()
     {
         CleanMarks();   
@@ -47,7 +53,8 @@ public abstract class Sense : MonoBehaviour
         foreach (var key in marksKeys)
         {
             PerceptionMark mark = _marks[key];
-            if (!mark.gameObject.activeSelf) {
+            if (!mark.gameObject.activeSelf)
+            {
                 _marks.Remove(key);
                 Destroy(mark.gameObject);
             }

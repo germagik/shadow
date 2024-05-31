@@ -6,11 +6,11 @@ using Utils;
 public class Player : Character
 {
     [SerializeField] protected float _maxResistance = 100f;
+    [SerializeField] protected GameObject _lantern;
     protected float _resistance;
     protected List<Item> _items = new();
     protected List<PrimaryItem> _primaryItems = new();
     protected bool _equippedLantern = false;
-    [SerializeField] protected GameObject _lantern;
 
     protected virtual void Update() 
     {

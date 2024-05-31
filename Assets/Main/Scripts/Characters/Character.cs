@@ -18,6 +18,14 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float _stepRunSoundFactor = 2f;
     [SerializeField] protected Eyes _eyes;
     [SerializeField] protected Ears _ears;
+
+    public virtual Eyes Eyes
+    {
+        get
+        {
+            return _eyes;
+        }
+    }
     protected Vector3 _direction;
     protected Rigidbody _body;
     protected Animator _animator;
@@ -58,18 +66,15 @@ public abstract class Character : MonoBehaviour
 
     public virtual void SetDirection(Vector3 direction)
     {
-        _direction = direction;
+        _direction = direction.normalized;
     }
 
     protected virtual void Move(float maxVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
     {
-        Vector3 normalizedDirection = _direction.normalized;
-        // _animator.SetFloat(AnimatorParametersNames.DirectionX, normalizedDirection.x);
-        // _animator.SetFloat(AnimatorParametersNames.DirectionY, normalizedDirection.z);
         _animator.SetBool(AnimatorParametersNames.IsMoving, true);
         _animator.SetBool(AnimatorParametersNames.IsRunning, isRunning);
         _animator.SetBool(AnimatorParametersNames.IsCrouching, isCrouching);
-        DoMove(normalizedDirection, maxVelocity, acceleration);
+        DoMove(_direction, maxVelocity, acceleration);
     }
 
     protected abstract void DoMove(Vector3 normalizedDirection, float maxVelocity, float acceleration);

@@ -1,14 +1,11 @@
 
-using UnityEngine;
-
 public class Chasing : EnemyState
 {
-    protected static Chasing _instance;
     public static Chasing Instance
     {
         get
         {
-            return _instance ??= new();
+            return Instance<Chasing>();
         }
     }
 

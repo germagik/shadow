@@ -81,7 +81,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -99,6 +99,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28fd6ac4599f8e14ea50a548d7e0682f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _name: Pick
+  _description: Old Book
+  _distance: 3
+  _axisName: 7
   _item: {fileID: 11400000, guid: 19411ee005643694db48391bc3e631f2, type: 2}
 --- !u!1 &6411707033407881980
 GameObject:

@@ -1,11 +1,10 @@
 public class Unaware : EnemyState
 {
-    protected static Unaware _instance;
     public static Unaware Instance
     {
         get
         {
-            return _instance ??= new();
+            return Instance<Unaware>();
         }
     }
 

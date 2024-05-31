@@ -17,16 +17,16 @@ namespace Utils
         public static readonly int Lantern = 1;
     }
 
-    public static class InputAxesNames
+    public enum InputAxesNames
     {
-        public static readonly string Horizontal = "Horizontal";
-        public static readonly string Vertical = "Vertical";
-        public static readonly string CameraX = "Mouse X";
-        public static readonly string CameraY = "Mouse Y";
-        public static readonly string Run = "Run";
-        internal static readonly string Crouch = "Crouch";
-        internal static readonly string Lantern = "Lantern";
-        internal static readonly string Pick = "Pick";
+        Horizontal,
+        Vertical,
+        CameraX,
+        CameraY,
+        Run,
+        Crouch,
+        Lantern,
+        PrimaryAction
     }
 
     public static class SurfaceSoundNames

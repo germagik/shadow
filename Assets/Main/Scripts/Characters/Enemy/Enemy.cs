@@ -19,7 +19,7 @@ public class Enemy : Character
     [SerializeField] protected float _alertMaxTime = 15f;
     [SerializeField] protected float _searchMaxTime = 10f;
     [SerializeField] protected float _boundedMaxTime = 15f;
-    [SerializeField] protected ActionPoint _weakPoint;
+    [SerializeField] protected ActionZone _weakZone;
     [SerializeField] protected GameObject _bounded;
     protected float _alertTime = 0f;
     protected float _searchTime = 0f;
@@ -36,6 +36,8 @@ public class Enemy : Character
     protected PerceptionMark _lastHeard;
     protected PerceptionMark _lastSight;
 
+    public Vector3 relDir;
+
     protected override void Awake()
     {
         base.Awake();
@@ -46,7 +48,7 @@ public class Enemy : Character
             _currentNode = _patrolNodes[0];
         }
         _lastDirection = transform.position;
-        SetState(EnemyState.Initial);
+        SetState(Unaware.Instance);
     }
 
     protected virtual void Start()
@@ -69,7 +71,7 @@ public class Enemy : Character
         _agent.isStopped = false;
         _agent.acceleration = maxVelocity;
         _agent.speed = maxVelocity;
-        Vector3 relativeDirection = (transform.forward - normalizedDirection).normalized;
+        Vector3 relativeDirection = new Vector3(Vector3.Dot(transform.right, normalizedDirection),0, Vector3.Dot(transform.forward,normalizedDirection)).normalized;
         _animator.SetFloat(AnimatorParametersNames.DirectionX, relativeDirection.x);
         _animator.SetFloat(AnimatorParametersNames.DirectionY, relativeDirection.z);
     }
@@ -124,10 +126,7 @@ public class Enemy : Character
 
     public virtual void SetState(EnemyState state)
     {
-        if (_state != null)
-        {
-            _state.OnOut(this);
-        }
+        _state?.OnOut(this);
         _state = state;
         _state.OnIn(this);
     }
@@ -140,6 +139,10 @@ public class Enemy : Character
 
     protected virtual void Patrol()
     {
+        if (_patrolNodes.Count == 0)
+        {
+            return;
+        }
         if (_target != _currentNode)
         {
             _target = _currentNode;
@@ -306,12 +309,12 @@ public class Enemy : Character
 
     public virtual void ActivateWeakness()
     {
-        _weakPoint.gameObject.SetActive(true);
+        _weakZone.gameObject.SetActive(true);
     }
 
     public virtual void DeactivateWeakness()
     {
-        _weakPoint.gameObject.SetActive(false);
+        _weakZone.gameObject.SetActive(false);
     }
 
     public virtual void OnBounded()
@@ -337,5 +340,11 @@ public class Enemy : Character
         {
             return false;
         }
+    }
+
+    public void OnDrawGizmos() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position + (Vector3.up * 2), transform.position + _direction + (Vector3.up * 2));
+        Gizmos.DrawSphere(transform.position + _direction * 1.5f + (Vector3.up * 2), 0.1f);
     }
 }
