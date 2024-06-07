@@ -2026,7 +2026,7 @@ GameObject:
   - component: {fileID: 3360042960038118289}
   - component: {fileID: 1206178680115099990}
   m_Layer: 0
-  m_Name: Mesh_B
+  m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2173,7 +2173,7 @@ GameObject:
   - component: {fileID: 1348603616895730800}
   - component: {fileID: 8459486375374972525}
   m_Layer: 11
-  m_Name: Player_B
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2284,8 +2284,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b6a6d6be5ff97641bf03adb52ae63db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  axisH: 0
-  axisV: 0
   _verticalPivot: {fileID: 2744856455353870348}
   _minVerticalAngle: -75
   _maxVerticalAngle: 75
@@ -2295,7 +2293,9 @@ MonoBehaviour:
   _actionLayers:
     serializedVersion: 2
     m_Bits: 128
-  _actionsDistance: 2
+  _actionDistance: 10
+  _actionCheckInterval: 0.3
+  _HUDController: {fileID: 0}
 --- !u!1 &7200878918253357853
 GameObject:
   m_ObjectHideFlags: 0

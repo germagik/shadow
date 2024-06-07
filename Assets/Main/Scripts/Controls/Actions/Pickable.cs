@@ -9,4 +9,5 @@ public class Pickable : ActionZone
         _item.PickedBy(player);
         Destroy(gameObject);
     }
+
 }

@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 public class Chasing : EnemyState
 {
     public static Chasing Instance
@@ -24,7 +26,7 @@ public class Chasing : EnemyState
     public override void IdleUpdate(Enemy enemy)
     {
         base.IdleUpdate(enemy);
-        // Debug.Log("Unaware");
-        // enemy.SetState(Unaware.Instance);
+        Debug.Log("Unaware");
+        enemy.SetState(Unaware.Instance);
     }
 }

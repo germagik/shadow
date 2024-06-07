@@ -3,7 +3,7 @@ using UnityEngine;
 public class PerceptionMark : MonoBehaviour
 {
     [SerializeField] protected float _duration = 10f;
-    protected float _time = 0f;
+    [SerializeField] protected float _time = 0f;
     protected bool _paused = false;
 
     protected virtual void Update()
@@ -32,12 +32,12 @@ public class PerceptionMark : MonoBehaviour
         _paused = true;
     }
 
-    public virtual void RefreshPosition(GameObject producer, Transform origin)
+    public virtual void RefreshPosition(GameObject origin, Transform point)
     {
-        transform.position = origin.position;
+        transform.position = point.position;
     }
 
-    public virtual void Initialize(GameObject producer)
+    public virtual void Initialize(GameObject origin)
     {
         // Does nothing by default
     }

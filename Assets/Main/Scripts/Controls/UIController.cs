@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class HUDController : MonoBehaviour
+public class UIController : MonoBehaviour
 {
     [SerializeField] protected TextMeshProUGUI _hintText;
     public virtual void SetHint(string hintText)

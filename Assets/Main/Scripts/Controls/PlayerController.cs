@@ -6,17 +6,23 @@ using Utils;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] protected Transform _verticalPivot;
+    [SerializeField] protected Transform _spine;
     [SerializeField] protected float _minVerticalAngle = -75f;
     [SerializeField] protected float _maxVerticalAngle = 75f;
+    [SerializeField] protected float _spineMinVerticalAngle = -50f;
+    [SerializeField] protected float _spineMaxVerticalAngle = 50f;
+    [SerializeField] protected float _spineCrouchMinVerticalAngle = -50f;
+    [SerializeField] protected float _spineCrouchMaxVerticalAngle = 20f;
     [SerializeField] protected Camera _camera;
     [SerializeField] protected Transform _lookAt;
     [SerializeField] protected float _cameraSensitivity = 2f;
     [SerializeField] protected LayerMask _actionLayers;
     [SerializeField] protected float _actionDistance = 10f;
     [SerializeField] protected float _actionCheckInterval = 0.3f;
-    [SerializeField] protected HUDController _HUDController;
+    [SerializeField] protected UIController _HUDController;
     protected Player _player;
     protected float _verticalRotation = 0f;
+    protected float _spineVerticalRotation = 0f;
     protected ActionZone _activeAction;
     protected virtual void Awake()
     {
@@ -32,6 +38,10 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (_player.IsGrabbed || _player.IsDead)
+        {
+            return;
+        }
         LookUpdate();
         ActionUpdate();
         if(Input.GetKeyDown(KeyCode.Escape))
@@ -42,6 +52,12 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
+        if (_player.IsGrabbed || _player.IsDead)
+        {
+            _player.Stand();
+            _player.Stay();
+            return;
+        }
         MoveFixedUpdate();
         ToggleLanternUpdate();
     }
@@ -55,17 +71,37 @@ public class PlayerController : MonoBehaviour
         _verticalRotation = Mathf.Clamp(_verticalRotation, _minVerticalAngle, _maxVerticalAngle);
         _verticalPivot.localEulerAngles = Vector3.right * _verticalRotation;
 
+        _spineVerticalRotation = _verticalRotation;
+        if (_player.IsCrouching)
+        {
+            _spineVerticalRotation = Mathf.Clamp(_spineVerticalRotation, _spineCrouchMinVerticalAngle, _spineCrouchMaxVerticalAngle);
+            _spine.localEulerAngles = Vector3.right * _spineVerticalRotation;
+        }
+        else
+        {
+            _spineVerticalRotation = Mathf.Clamp(_spineVerticalRotation, _spineMinVerticalAngle, _spineMaxVerticalAngle);
+            _spine.localEulerAngles = Vector3.right * _spineVerticalRotation;
+        }
+
         _player.transform.Rotate(Vector3.up * inputX);
         _camera.transform.LookAt(_lookAt);
     }
+
     protected virtual void ActionUpdate()
     {
         if (_activeAction != null)
         {
-            _HUDController.SetHint(_activeAction.Hint);
-            if (Input.GetAxisRaw(_activeAction.AxisName.ToString()) != 0)
+            if (_activeAction.CanBeActionatedBy(_player))
             {
-                _activeAction.ActionatedBy(_player);
+                _HUDController.SetHint(_activeAction.Hint);
+                if (Input.GetAxisRaw(_activeAction.AxisName.ToString()) != 0)
+                {
+                    _activeAction.ActionatedBy(_player);
+                }
+            }
+            else
+            {
+                _HUDController.SetHint(_activeAction.BlockedHint);
             }
         }
     }

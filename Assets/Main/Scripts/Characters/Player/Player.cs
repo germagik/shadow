@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Utils;
 
@@ -11,6 +12,22 @@ public class Player : Character
     protected List<Item> _items = new();
     protected List<PrimaryItem> _primaryItems = new();
     protected bool _equippedLantern = false;
+    protected bool _grabbed = false;
+    public bool IsGrabbed
+    {
+        get
+        {
+            return _grabbed;
+        }
+    }
+    protected bool _dead = false;
+    public bool IsDead
+    {
+        get
+        {
+            return _dead;
+        }
+    }
 
     protected virtual void Update() 
     {
@@ -41,6 +58,10 @@ public class Player : Character
 
     public virtual void ToggleLantern()
     {
+        if (!HasLantern())
+        {
+            return;
+        }
         float currentWeight = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern);
         bool equipping = _equippedLantern && currentWeight < 1, unequipping = !_equippedLantern && currentWeight > 0;
         if (!equipping && !unequipping)
@@ -124,11 +145,37 @@ public class Player : Character
         _body.velocity = Vector3.zero;
     }
 
+    public virtual bool HasLantern()
+    {
+        return _primaryItems.Any(item => item is Lantern);
+    }
+
     public override void OnHear(PerceptionMark mark)
     {
     }
 
     public override void OnSight(PerceptionMark mark)
     {
+    }
+
+    public virtual void GrabbedBy(Enemy enemy)
+    {
+        if (IsDead)
+        {
+            return;
+        }
+        _grabbed = true;
+    }
+
+    public virtual bool SuccessfullyGrabbedBy(Enemy enemy)
+    {
+        transform.forward = enemy.transform.position - transform.position;
+        return true;
+    }
+
+    public virtual void Killed()
+    {
+        _animator.SetTrigger("Die");
+        _dead = true;
     }
 }

@@ -14,9 +14,9 @@ public class Enemy : Character
     [SerializeField] protected float _patrolMaxIdleTime = 5f;
     [SerializeField] protected float _patrolNodeChangeDistance = 0.1f;
     [SerializeField] protected bool _randomPatrol = false;
-    [SerializeField] protected float _alertSightSpeed = 2f;
-    [SerializeField] protected float _alertHeardSpeed = 1f;
-    [SerializeField] protected float _alertMaxTime = 15f;
+    [SerializeField] protected float _alertSightMaxTime = 1f;
+    [SerializeField] protected float _alertHeardMaxTime = 3f;
+    [SerializeField] protected float _chaseMinDistance = 2f;
     [SerializeField] protected float _searchMaxTime = 10f;
     [SerializeField] protected float _boundedMaxTime = 15f;
     [SerializeField] protected ActionZone _weakZone;
@@ -35,8 +35,6 @@ public class Enemy : Character
     protected Vector3 _lastDirection;
     protected PerceptionMark _lastHeard;
     protected PerceptionMark _lastSight;
-
-    public Vector3 relDir;
 
     protected override void Awake()
     {
@@ -83,11 +81,11 @@ public class Enemy : Character
 
     protected virtual void Update()
     {
-        if (_eyes.HasSight)
+        if (_lastSight != null)
         {
             _state.SightUpdate(this);
         }
-        else if (_ears.HasHeard)
+        else if (_lastHeard != null)
         {
             _state.HeardUpdate(this);
         }
@@ -101,11 +99,11 @@ public class Enemy : Character
     protected virtual void FixedUpdate()
     {
         PositionFixedUpdate();
-        if (_eyes.HasSight)
+        if (_lastSight != null)
         {
             _state.SightFixedUpdate(this);
         }
-        else if (_ears.HasHeard)
+        else if (_lastHeard != null)
         {
             _state.HeardFixedUpdate(this);
         }
@@ -122,6 +120,22 @@ public class Enemy : Character
         _deltaDirection = _deltaDirection.normalized;
         _lastDirection = transform.position;
         SetDirection(_deltaDirection);
+    }
+
+    protected virtual void LateUpdate()
+    {
+        MarksLateUpdate();    
+    }
+    protected virtual void MarksLateUpdate()
+    {
+        if (_lastHeard != null && _lastHeard.IsDestroyed())
+        {
+            _lastHeard = null;
+        }
+        if (_lastSight != null && _lastSight.IsDestroyed())
+        {
+            _lastSight = null;
+        }
     }
 
     public virtual void SetState(EnemyState state)
@@ -218,8 +232,8 @@ public class Enemy : Character
         heardDirection.y = 0;
 
         transform.LookAt(heardDirection);
-        _alertTime += _alertHeardSpeed * Time.deltaTime;
-        return _alertTime >= _alertMaxTime;
+        _alertTime += Time.deltaTime;
+        return _alertTime >= _alertHeardMaxTime;
     }
 
     public virtual bool CheckSight()
@@ -235,8 +249,8 @@ public class Enemy : Character
         transform.rotation = Quaternion.LookRotation(sightDirection);
         
         _eyes.transform.LookAt(_lastSight.transform);
-        _alertTime += _alertSightSpeed * Time.deltaTime;
-        return _alertTime >= _alertMaxTime;
+        _alertTime += Time.deltaTime;
+        return _alertTime >= _alertSightMaxTime;
     }
 
     protected virtual void Calm()
@@ -285,11 +299,26 @@ public class Enemy : Character
         {
             return;
         }
-        _lastSight.Pause();
         _target = _lastSight.transform;
-        if ((_target.position - transform.position).sqrMagnitude < Mathf.Pow(5, 2))
+        if ((_target.position - transform.position).sqrMagnitude < Mathf.Pow(_chaseMinDistance, 2))
         {
             Stay();
+            if (
+                _lastSight is ChaseMark mark &&
+                mark.Origin.TryGetComponent(out Player player) &&
+                (player.transform.position - transform.position).sqrMagnitude < Mathf.Pow(_chaseMinDistance, 2))
+            {
+                player.GrabbedBy(this);
+                if (player.SuccessfullyGrabbedBy(this))
+                {
+                    transform.forward = player.transform.position - transform.position;
+                    if (!player.IsDead)
+                    {
+                        _animator.SetTrigger("Attack");
+                        player.Killed();
+                    }
+                }
+            }
         }
         else
         {

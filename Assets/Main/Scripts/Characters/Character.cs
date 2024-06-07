@@ -29,6 +29,14 @@ public abstract class Character : MonoBehaviour
     protected Vector3 _direction;
     protected Rigidbody _body;
     protected Animator _animator;
+    protected bool _isCrouching = false;
+    public virtual bool IsCrouching 
+    {
+        get
+        {
+            return _isCrouching;
+        }
+    }
 
     protected virtual void Awake() {
         _body = GetComponent<Rigidbody>();
@@ -74,6 +82,7 @@ public abstract class Character : MonoBehaviour
         _animator.SetBool(AnimatorParametersNames.IsMoving, true);
         _animator.SetBool(AnimatorParametersNames.IsRunning, isRunning);
         _animator.SetBool(AnimatorParametersNames.IsCrouching, isCrouching);
+        _isCrouching = isCrouching;
         DoMove(_direction, maxVelocity, acceleration);
     }
 
@@ -86,6 +95,7 @@ public abstract class Character : MonoBehaviour
         _animator.SetBool(AnimatorParametersNames.IsMoving, false);
         _animator.SetBool(AnimatorParametersNames.IsRunning, false);
         _animator.SetBool(AnimatorParametersNames.IsCrouching, false);
+        _isCrouching = false;
         DoStay();
     }
 
@@ -109,11 +119,13 @@ public abstract class Character : MonoBehaviour
     public virtual void Crouch()
     {
         _animator.SetBool(AnimatorParametersNames.IsCrouching, true);
+        _isCrouching = true;
     }
 
     public virtual void Stand()
     {
         _animator.SetBool(AnimatorParametersNames.IsCrouching, false);
+        _isCrouching = false;
     }
 
     public abstract void OnHear(PerceptionMark mark);

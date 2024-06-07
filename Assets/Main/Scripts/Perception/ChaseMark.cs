@@ -3,15 +3,21 @@ using UnityEngine;
 public class ChaseMark : PerceptionMark
 {
     [SerializeField] protected float _chaseDuration = 3f;
-    protected float _chaseTime = 0f;
-    protected GameObject _producer;
-
+    [SerializeField] protected float _chaseTime = 0f;
+    protected GameObject _origin;
+    public virtual GameObject Origin
+    {
+        get
+        {
+            return _origin;
+        }
+    }
     protected override void Update()
     {
         if (_chaseTime < _chaseDuration)
         {
             _chaseTime += Time.deltaTime;
-            RefreshPosition(_producer);
+            RefreshPosition(_origin);
         }
         else
         {
@@ -25,16 +31,16 @@ public class ChaseMark : PerceptionMark
         _chaseTime = 0f;
     }
 
-    public override void RefreshPosition(GameObject producer, Transform origin = null)
+    public override void RefreshPosition(GameObject origin, Transform point = null)
     {
         if (_chaseTime < _chaseDuration)
         {
-            transform.position = producer.transform.position;
+            transform.position = origin.transform.position;
         }
     }
 
-    public override void Initialize(GameObject producer)
+    public override void Initialize(GameObject origin)
     {
-        _producer = producer;
+        _origin = origin;
     }
 }

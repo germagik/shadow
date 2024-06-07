@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -3519626130568540567}
   - component: {fileID: -3498650670432237675}
   m_Layer: 8
-  m_Name: SightPoint
+  m_Name: SightZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
