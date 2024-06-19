@@ -8,7 +8,6 @@ using Utils;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : Character
 {
-    [SerializeField] protected float _pathFindingInterval = 0.25f;
     [SerializeField] protected List<Transform> _patrolNodes = new();
     [SerializeField] protected float _patrolMinIdleTime = 2f;
     [SerializeField] protected float _patrolMaxIdleTime = 5f;
@@ -26,13 +25,8 @@ public class Enemy : Character
     protected float _randomMaxIdleTime = 0f;
     protected float _idleTime = 0f;
     protected float _boundedTime = 0f;
-    protected Transform _target;
     protected Transform _currentNode;
     protected EnemyState _state;
-    protected NavMeshAgent _agent;
-    protected Vector3 _lastDestination;
-    protected Vector3 _deltaDirection;
-    protected Vector3 _lastDirection;
     protected PerceptionMark _lastHeard;
     protected PerceptionMark _lastSight;
 
@@ -40,38 +34,11 @@ public class Enemy : Character
     {
         base.Awake();
         _body.constraints |= RigidbodyConstraints.FreezePosition;
-        _agent = GetComponent<NavMeshAgent>();
         if (_patrolNodes.Count > 0)
         {
             _currentNode = _patrolNodes[0];
         }
-        _lastDirection = transform.position;
         SetState(Unaware.Instance);
-    }
-
-    protected virtual void Start()
-    {
-        StartCoroutine(PathFindingRoutine());
-    }
-
-    protected virtual IEnumerator PathFindingRoutine()
-    {
-        if (_target != null && !_target.position.Equals(_lastDestination))
-        {
-            _agent.SetDestination(_target.position);
-            _lastDestination = _target.position;
-        }
-        yield return new WaitForSeconds(_pathFindingInterval);
-        StartCoroutine(PathFindingRoutine());
-    }
-    protected override void DoMove(Vector3 normalizedDirection, float maxVelocity, float acceleration)
-    {
-        _agent.isStopped = false;
-        _agent.acceleration = maxVelocity;
-        _agent.speed = maxVelocity;
-        Vector3 relativeDirection = new Vector3(Vector3.Dot(transform.right, normalizedDirection),0, Vector3.Dot(transform.forward,normalizedDirection)).normalized;
-        _animator.SetFloat(AnimatorParametersNames.DirectionX, relativeDirection.x);
-        _animator.SetFloat(AnimatorParametersNames.DirectionY, relativeDirection.z);
     }
 
     protected override void DoStay()
@@ -98,7 +65,6 @@ public class Enemy : Character
 
     protected virtual void FixedUpdate()
     {
-        PositionFixedUpdate();
         if (_lastSight != null)
         {
             _state.SightFixedUpdate(this);
@@ -113,14 +79,7 @@ public class Enemy : Character
         }
     }
 
-    protected virtual void PositionFixedUpdate()
-    {
-        _deltaDirection = transform.position - _lastDirection;
-        _deltaDirection.y = 0;
-        _deltaDirection = _deltaDirection.normalized;
-        _lastDirection = transform.position;
-        SetDirection(_deltaDirection);
-    }
+
 
     protected virtual void LateUpdate()
     {

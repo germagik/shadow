@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using Utils;
@@ -23,10 +24,14 @@ public class PlayerController : MonoBehaviour
     protected Player _player;
     protected float _verticalRotation = 0f;
     protected float _spineVerticalRotation = 0f;
-    protected ActionZone _activeAction;
+    protected ActionZone _aimedAction;
+    protected Action StateUpdate;
+    protected Action StateFixedUpdate;
     protected virtual void Awake()
     {
         _player = GetComponent<Player>();
+        StateUpdate = PlayerControlUpdate;
+        StateFixedUpdate = PlayerControlFixedUpdate;
     }
 
     protected virtual void Start()
@@ -38,19 +43,26 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void Update()
     {
+        StateUpdate();
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        StateFixedUpdate();
+    }
+
+    protected void PlayerControlUpdate()
+    {
         if (_player.IsGrabbed || _player.IsDead)
         {
             return;
         }
-        LookUpdate();
-        ActionUpdate();
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
-    }
+        CameraUpdate();
+        AimUpdate();
+        CommandsUpdate();
 
-    protected virtual void FixedUpdate()
+    }
+    protected virtual void PlayerControlFixedUpdate()
     {
         if (_player.IsGrabbed || _player.IsDead)
         {
@@ -59,10 +71,41 @@ public class PlayerController : MonoBehaviour
             return;
         }
         MoveFixedUpdate();
-        ToggleLanternUpdate();
     }
 
-    protected virtual void LookUpdate()
+    protected virtual void GoingToTargetUpdate()
+    {
+
+    }
+    protected virtual void GoingToTargetFixedUpdate()
+    {
+        CrouchingFixedUpdate();
+        if (!(_aimedAction != null && _aimedAction.CanBeActionatedBy(_player)))
+        {
+            _player.Stay();
+            StateUpdate = PlayerControlUpdate;
+            StateFixedUpdate = PlayerControlFixedUpdate;
+            return;
+        }
+        if ((_aimedAction.transform.position - transform.position).sqrMagnitude <= Mathf.Pow(_aimedAction.RequiredDistance, 2))
+        {
+            _aimedAction.ActionatedBy(_player);
+            _player.Stay();
+            StateUpdate = PlayerControlUpdate;
+            StateFixedUpdate = PlayerControlFixedUpdate;
+            return;
+        }
+        if (_player.IsCrouching)
+        {
+            _player.WalkCrouch();
+        }
+        else
+        {
+            _player.Walk();
+        }
+    }
+
+    protected virtual void CameraUpdate()
     {
         float inputX = Input.GetAxis(InputAxesNames.CameraX.ToString()) * _cameraSensitivity;
         float inputY = Input.GetAxis(InputAxesNames.CameraY.ToString()) * _cameraSensitivity;
@@ -87,21 +130,22 @@ public class PlayerController : MonoBehaviour
         _camera.transform.LookAt(_lookAt);
     }
 
-    protected virtual void ActionUpdate()
+    protected virtual void AimUpdate()
     {
-        if (_activeAction != null)
+        if (_aimedAction != null)
         {
-            if (_activeAction.CanBeActionatedBy(_player))
+            if (_aimedAction.CanBeActionatedBy(_player))
             {
-                _HUDController.SetHint(_activeAction.Hint);
-                if (Input.GetAxisRaw(_activeAction.AxisName.ToString()) != 0)
+                _HUDController.SetHint(_aimedAction.Hint);
+                if (Input.GetAxisRaw(_aimedAction.AxisName.ToString()) != 0)
                 {
-                    _activeAction.ActionatedBy(_player);
+                    StateUpdate = GoingToTargetUpdate;
+                    StateFixedUpdate = GoingToTargetFixedUpdate;
                 }
             }
             else
             {
-                _HUDController.SetHint(_activeAction.BlockedHint);
+                _HUDController.SetHint(_aimedAction.BlockedHint);
             }
         }
     }
@@ -113,25 +157,30 @@ public class PlayerController : MonoBehaviour
             Ray actionRay = new(_camera.transform.position, _camera.transform.forward);
             if (Physics.Raycast(actionRay, out RaycastHit actionHit, _actionDistance, _actionLayers)
                 && actionHit.collider.TryGetComponent(out ActionZone actionZone)
-                && (_camera.transform.position - actionZone.transform.position).sqrMagnitude < Mathf.Pow(actionZone.Distance, 2))
+                && (_camera.transform.position - actionZone.transform.position).sqrMagnitude < Mathf.Pow(actionZone.SightDistance, 2))
             {
-                _activeAction = actionZone;
+                _aimedAction = actionZone;
             }
             else
             {
                 _HUDController.ClearHint();
-                _activeAction = null;
+                _aimedAction = null;
             }
         }
         yield return new WaitForSeconds(_actionCheckInterval);
         StartCoroutine(ActionRoutine());
     }
 
-    protected virtual void ToggleLanternUpdate()
+    protected virtual void CommandsUpdate()
     {
         if (Input.GetAxisRaw(InputAxesNames.Lantern.ToString()) != 0)
         {
             _player.ToggleLantern();
+        }
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
         }
     }
 
@@ -160,6 +209,11 @@ public class PlayerController : MonoBehaviour
             _player.Stay();
         }
 
+        CrouchingFixedUpdate();
+    }
+
+    protected virtual void CrouchingFixedUpdate()
+    {
         if (Input.GetAxisRaw(InputAxesNames.Crouch.ToString()) != 0)
         {
             _player.Crouch();

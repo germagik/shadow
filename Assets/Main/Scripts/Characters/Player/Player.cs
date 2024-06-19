@@ -29,6 +29,11 @@ public class Player : Character
         }
     }
 
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     protected virtual void Update() 
     {
         LanternUpdate();
@@ -56,9 +61,11 @@ public class Player : Character
         }
     }
 
+
+
     public virtual void ToggleLantern()
     {
-        if (!HasLantern())
+        if (!HasPrimary<Lantern>())
         {
             return;
         }
@@ -71,6 +78,19 @@ public class Player : Character
                 _lantern.SetActive(true);
             else
                 _lantern.SetActive(false);
+        }
+    }
+
+    public virtual void CastSpell<T>() where T : Spell
+    {
+        if (!HasSpell<T>())
+        {
+            return;
+        }
+        Spell spell = GetSpell<T>();
+        if (spell.CanBeCastedBy(this))
+        {
+            spell.CastedBy(this);
         }
     }
 
@@ -125,31 +145,32 @@ public class Player : Character
         }
     }
 
-    protected override void DoMove(Vector3 normalizedDirection, float maxVelocity, float acceleration)
-    {
-        _animator.SetFloat(AnimatorParametersNames.DirectionX, normalizedDirection.x);
-        _animator.SetFloat(AnimatorParametersNames.DirectionY, normalizedDirection.z);
-        Vector3 relativeDirection = ((transform.forward * normalizedDirection.z) + (transform.right * normalizedDirection.x)).normalized;
-        if (_body.velocity.sqrMagnitude < Math.Pow(maxVelocity, 2))
-        {
-            _body.velocity += relativeDirection * acceleration;
-        }
-        else
-        {
-            _body.velocity = relativeDirection * maxVelocity;
-        }
-    }
-
     protected override void DoStay()
     {
         _body.velocity = Vector3.zero;
     }
 
-    public virtual bool HasLantern()
+    protected virtual bool HasPrimary<T>() where T : PrimaryItem
     {
-        return _primaryItems.Any(item => item is Lantern);
+        return _primaryItems.Any(item => item is T);
+    }
+    protected virtual T GetPrimary<T>() where T : PrimaryItem
+    {
+        return (T)_primaryItems.ElementAtOrDefault(_primaryItems.FindIndex(item => item is T));
+    }
+    public virtual bool HasSpell<T>() where T : Spell
+    {
+        if (!HasPrimary<SpellsBook>())
+        {
+            return false;
+        }
+        return GetPrimary<SpellsBook>().HasSpell<T>();
     }
 
+    public virtual Spell GetSpell<T>() where T : Spell
+    {
+        return GetPrimary<SpellsBook>()?.GetSpell<T>();
+    }
     public override void OnHear(PerceptionMark mark)
     {
     }
@@ -160,7 +181,7 @@ public class Player : Character
 
     public virtual void GrabbedBy(Enemy enemy)
     {
-        if (IsDead)
+        if (IsDead || _grabbed)
         {
             return;
         }

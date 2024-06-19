@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 using Utils;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -18,6 +20,12 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float _stepRunSoundFactor = 2f;
     [SerializeField] protected Eyes _eyes;
     [SerializeField] protected Ears _ears;
+    [SerializeField] protected float _pathFindingInterval = 0.25f;
+    protected NavMeshAgent _agent;
+    protected Transform _target;
+    private Vector3 _lastDestination;
+    private Vector3 _deltaDirection;
+    private Vector3 _lastPosition;
 
     public virtual Eyes Eyes
     {
@@ -42,6 +50,27 @@ public abstract class Character : MonoBehaviour
         _body = GetComponent<Rigidbody>();
         _animator = GetComponentInChildren<Animator>();
         _body.constraints = RigidbodyConstraints.FreezeRotation;
+        _agent = GetComponent<NavMeshAgent>();
+        _lastPosition = transform.position;
+    }
+    protected virtual void Start()
+    {
+        StartCoroutine(PathFindingRoutine());
+    }
+
+    protected virtual IEnumerator PathFindingRoutine()
+    {
+        if (_target != null && !_target.position.Equals(_lastDestination))
+        {
+            _agent.SetDestination(_target.position);
+            _lastDestination = _target.position;
+            _deltaDirection = transform.position - _lastPosition;
+            _deltaDirection.y = 0;
+            _lastPosition = transform.position;
+            SetDirection(_deltaDirection);
+        }
+        yield return new WaitForSeconds(_pathFindingInterval);
+        StartCoroutine(PathFindingRoutine());
     }
 
     public virtual void OnStep(string foot, string soundReference)
@@ -77,16 +106,41 @@ public abstract class Character : MonoBehaviour
         _direction = direction.normalized;
     }
 
+    public virtual void SetTarget(Transform target)
+    {
+        _target = target;
+    }
+
     protected virtual void Move(float maxVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
     {
         _animator.SetBool(AnimatorParametersNames.IsMoving, true);
         _animator.SetBool(AnimatorParametersNames.IsRunning, isRunning);
         _animator.SetBool(AnimatorParametersNames.IsCrouching, isCrouching);
         _isCrouching = isCrouching;
-        DoMove(_direction, maxVelocity, acceleration);
+        if (!_target)
+        {
+            _animator.SetFloat(AnimatorParametersNames.DirectionX, _direction.x);
+            _animator.SetFloat(AnimatorParametersNames.DirectionY, _direction.z);
+            Vector3 relativeDirection = ((transform.forward * _direction.z) + (transform.right * _direction.x)).normalized;
+            if (_body.velocity.sqrMagnitude < Math.Pow(maxVelocity, 2))
+            {
+                _body.velocity += relativeDirection * acceleration;
+            }
+            else
+            {
+                _body.velocity = relativeDirection * maxVelocity;
+            }
+        }
+        else
+        {
+            _agent.isStopped = false;
+            _agent.acceleration = maxVelocity;
+            _agent.speed = maxVelocity;
+            Vector3 relativeDirection = new Vector3(Vector3.Dot(transform.right, _direction),0, Vector3.Dot(transform.forward,_direction)).normalized;
+            _animator.SetFloat(AnimatorParametersNames.DirectionX, relativeDirection.x);
+            _animator.SetFloat(AnimatorParametersNames.DirectionY, relativeDirection.z);
+        }
     }
-
-    protected abstract void DoMove(Vector3 normalizedDirection, float maxVelocity, float acceleration);
 
     public virtual void Stay()
     {

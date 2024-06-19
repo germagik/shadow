@@ -26,7 +26,8 @@ namespace Utils
         Run,
         Crouch,
         Lantern,
-        PrimaryAction
+        PrimaryAction,
+        Confine
     }
 
     public static class SurfaceSoundNames

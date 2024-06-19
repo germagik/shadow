@@ -810,7 +810,8 @@ MonoBehaviour:
   _name: E
   _description: Exorcizar
   _blockedDescription: 
-  _distance: 3
+  _sightDistance: 3
+  _requiredDistance: 1
   _axisName: 7
   _enemy: {fileID: 1751542597}
 --- !u!136 &199559381
@@ -957,7 +958,8 @@ MonoBehaviour:
   _name: Confine
   _description: 
   _blockedDescription: 
-  _distance: 3
+  _sightDistance: 3
+  _requiredDistance: 1
   _axisName: 7
   _enemy: {fileID: 1543489058}
 --- !u!1001 &279359578
@@ -4219,7 +4221,7 @@ Transform:
   m_GameObject: {fileID: 606551873}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4240,7 +4242,8 @@ MonoBehaviour:
   _name: E
   _description: Encerrar
   _blockedDescription: Agacharse para encerrar
-  _distance: 3
+  _sightDistance: 3
+  _requiredDistance: 2
   _axisName: 7
   _enemy: {fileID: 1751542597}
 --- !u!136 &606551876
@@ -4262,8 +4265,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.2542894
-  m_Height: 1
+  m_Radius: 0.6260706
+  m_Height: 1.2572842
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &609963031 stripped
@@ -4371,6 +4374,33 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3025689918074244963, guid: 2e67385eef4532d4abb52539127eb2ad, type: 3}
   m_PrefabInstance: {fileID: 621844793}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &630542999 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6992675715409086200, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
+  m_PrefabInstance: {fileID: 770843966}
+  m_PrefabAsset: {fileID: 0}
+--- !u!195 &630543005
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630542999}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 1
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &688887575
 GameObject:
   m_ObjectHideFlags: 0
@@ -5518,6 +5548,10 @@ PrefabInstance:
       value: 18.917908
       objectReference: {fileID: 0}
     - target: {fileID: 1348603616895730800, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
+      propertyPath: _toTarget
+      value: 
+      objectReference: {fileID: 821200104}
+    - target: {fileID: 1348603616895730800, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
       propertyPath: _stepRunSoundFactor
       value: 5
       objectReference: {fileID: 0}
@@ -6316,7 +6350,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6992675715409086200, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 630543005}
   m_SourcePrefab: {fileID: 100100000, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
 --- !u!1 &821200099
 GameObject:
@@ -10341,7 +10378,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1751542591}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 55, y: 0, z: 1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -10350,7 +10387,7 @@ Transform:
   - {fileID: 606551874}
   - {fileID: 199559379}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!136 &1751542595
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -10427,12 +10464,7 @@ MonoBehaviour:
   _eyes: {fileID: 609963037}
   _ears: {fileID: 1663696210}
   _pathFindingInterval: 0.25
-  _patrolNodes:
-  - {fileID: 688887576}
-  - {fileID: 982338151}
-  - {fileID: 28318124}
-  - {fileID: 377458960}
-  - {fileID: 944065479}
+  _patrolNodes: []
   _patrolMinIdleTime: 2
   _patrolMaxIdleTime: 5
   _patrolNodeChangeDistance: 0.1
@@ -10544,7 +10576,8 @@ MonoBehaviour:
   _name: 
   _description: 
   _blockedDescription: 
-  _distance: 3
+  _sightDistance: 3
+  _requiredDistance: 1
   _axisName: 7
   _enemy: {fileID: 1543489058}
 --- !u!136 &1753086743

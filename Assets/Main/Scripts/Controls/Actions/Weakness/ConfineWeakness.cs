@@ -1,13 +1,11 @@
-using UnityEngine;
 
-public class Bound : ActionZone
+public class ConfineWeakness : Weakness<Confine>
 {
-    [SerializeField] protected Enemy _enemy;
-
     public override bool CanBeActionatedBy(Player player)
     {
-        return player.IsCrouching;
+        return base.CanBeActionatedBy(player) && player.IsCrouching;
     }
+
     public override void ActionatedBy(Player player)
     {
         _enemy.SetState(Bounded.Instance);

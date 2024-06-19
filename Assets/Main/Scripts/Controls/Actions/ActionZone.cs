@@ -5,7 +5,8 @@ public abstract class ActionZone : MonoBehaviour
     [SerializeField] protected string _name;
     [SerializeField] protected string _description;
     [SerializeField] protected string _blockedDescription;
-    [SerializeField] protected float _distance = 3f;
+    [SerializeField] protected float _sightDistance = 3f;
+    [SerializeField] protected float _requiredDistance = 1f;
     [SerializeField] protected InputAxesNames _axisName = InputAxesNames.PrimaryAction;
     public virtual string Hint
     {
@@ -29,11 +30,19 @@ public abstract class ActionZone : MonoBehaviour
         }
     }
 
-    public float Distance
+    public float SightDistance
     {
         get
         {
-            return _distance;
+            return _sightDistance;
+        }
+    }
+
+    public float RequiredDistance
+    {
+        get
+        {
+            return _requiredDistance;
         }
     }
     public abstract void ActionatedBy(Player player);

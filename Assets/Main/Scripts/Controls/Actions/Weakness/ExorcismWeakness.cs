@@ -1,10 +1,8 @@
 
 using UnityEngine;
 
-public class Exorcism : ActionZone
+public class ExorcismWeakness : Weakness<Exorcism>
 {
-    [SerializeField] protected Enemy _enemy;
-
     protected float _maxDuration = 5f;
     protected float _duration = 0f;
     public override string Hint
@@ -14,6 +12,7 @@ public class Exorcism : ActionZone
             return $"{base.Hint} ({_maxDuration - _duration})";
         }
     }
+
     public override void ActionatedBy(Player player)
     {
         if (_duration < _maxDuration)
