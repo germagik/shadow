@@ -6103,7 +6103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6869399231741869921, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 53.5
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 6869399231741869921, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6111,7 +6111,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6869399231741869921, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10.5
+      value: 1.75
       objectReference: {fileID: 0}
     - target: {fileID: 6869399231741869921, guid: b64b1a1bf58f5cd43a7b834cd8abd1e4, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9742,7 +9742,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1543489057
 Transform:
   m_ObjectHideFlags: 0
@@ -9807,7 +9807,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 0
+  m_BaseOffset: -0.08
   m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
 --- !u!136 &1543489061
@@ -10334,7 +10334,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!195 &1751542592
 NavMeshAgent:
   m_ObjectHideFlags: 0
