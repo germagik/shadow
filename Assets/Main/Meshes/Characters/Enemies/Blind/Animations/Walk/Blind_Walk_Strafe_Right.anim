@@ -45804,14 +45804,14 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.26666668
-    functionName: OnStep
+    functionName: TriggerOnStep
     data: LeftWalk
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.78333336
-    functionName: OnStep
+    functionName: TriggerOnStep
     data: RightWalk
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

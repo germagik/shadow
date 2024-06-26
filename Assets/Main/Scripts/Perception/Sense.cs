@@ -6,11 +6,12 @@ using Utils;
 
 public abstract class Sense : MonoBehaviour
 {
-    [SerializeField] protected Character _character;
     [SerializeField] protected LayerMask _producerLayers;
     [SerializeField] protected PerceptionMark _perceptionMarkPrefab;
+    protected Character _character;
     protected Dictionary<int,PerceptionMark> _marks = new();
-    
+    public event Action<PerceptionMark> OnFirstSense;
+    public event Action<PerceptionMark> OnSense;    
     public PerceptionMark Closer
     {
         get
@@ -34,13 +35,18 @@ public abstract class Sense : MonoBehaviour
             return found;
         }
     }
-    protected virtual void OnFirstSense(PerceptionMark mark)
+
+    protected virtual void Awake()
     {
-        // Does nothing by default
-    }
-    protected virtual void OnSense(PerceptionMark mark)
-    {
-        // Does nothing by default
+        _character = GetComponentInParent<Character>();
+        if (OnFirstSense == null)
+        {
+            OnFirstSense = ActionsUtils.Noop1;
+        }
+        if (OnSense == null)
+        {
+            OnSense = ActionsUtils.Noop1;
+        }
     }
     protected virtual void LateUpdate()
     {

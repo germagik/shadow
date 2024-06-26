@@ -41052,15 +41052,15 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.5
-    functionName: OnStep
-    data: LeftWalk
+    functionName: TriggerOnStep
+    data: RightWalk
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1
-    functionName: OnStep
-    data: RightWalk
+    functionName: TriggerOnStep
+    data: LeftWalk
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

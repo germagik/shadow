@@ -101,7 +101,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Pick
   _description: Old Book
-  _distance: 3
+  _blockedDescription: 
+  _sightDistance: 3
+  _requiredDistance: 1
   _axisName: 7
   _item: {fileID: 11400000, guid: 19411ee005643694db48391bc3e631f2, type: 2}
 --- !u!1 &6411707033407881980

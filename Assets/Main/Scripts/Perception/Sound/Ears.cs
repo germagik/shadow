@@ -1,6 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
+// TP2: Facundo Campos
 public class Ears : Sense
 {
     public virtual bool HasHeard
@@ -24,15 +25,6 @@ public class Ears : Sense
         SetPerceptionMarkFrom(emitter.Producer, sound.transform);
     }
 
-    protected override void OnFirstSense(PerceptionMark mark)
-    {
-        _character.OnHear(mark);
-    }
-
-    protected override void OnSense(PerceptionMark mark)
-    {
-        _character.OnHear(mark);
-    }
     protected virtual void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;

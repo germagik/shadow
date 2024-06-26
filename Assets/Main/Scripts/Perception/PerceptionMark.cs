@@ -32,6 +32,11 @@ public class PerceptionMark : MonoBehaviour
         _paused = true;
     }
 
+    public virtual void Resume()
+    {
+        _paused = false;
+    }
+
     public virtual void RefreshPosition(GameObject origin, Transform point)
     {
         transform.position = point.position;

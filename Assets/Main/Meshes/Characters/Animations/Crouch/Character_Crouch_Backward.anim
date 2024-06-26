@@ -45040,14 +45040,14 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.45
-    functionName: OnStep
+    functionName: TriggerOnStep
     data: LeftCrouch
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 1.0333333
-    functionName: OnStep
+    functionName: TriggerOnStep
     data: RightCrouch
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

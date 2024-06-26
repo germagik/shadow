@@ -1,17 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Utils;
 
 public class Player : Character
 {
-    [SerializeField] protected float _maxResistance = 100f;
-    [SerializeField] protected GameObject _lantern;
-    protected float _resistance;
     protected List<Item> _items = new();
     protected List<PrimaryItem> _primaryItems = new();
-    protected bool _equippedLantern = false;
     protected bool _grabbed = false;
     public bool IsGrabbed
     {
@@ -26,58 +20,6 @@ public class Player : Character
         get
         {
             return _dead;
-        }
-    }
-
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
-    protected virtual void Update() 
-    {
-        LanternUpdate();
-    }
-    protected virtual void LanternUpdate()
-    {
-        float currentWeight = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern);
-        bool equipping = _equippedLantern && currentWeight < 1, unequipping = !_equippedLantern && currentWeight > 0;
-        if (equipping || unequipping)
-        {
-            float next;
-            if (equipping)
-            {
-                next = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern) + Time.deltaTime;
-                if (next > 1)
-                    next = 1;
-            }
-            else
-            {
-                next = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern) - Time.deltaTime;
-                if (next < 0)
-                    next = 0;
-            }
-            _animator.SetLayerWeight(AnimatorLayerIndexes.Lantern, next);
-        }
-    }
-
-
-
-    public virtual void ToggleLantern()
-    {
-        if (!HasPrimary<Lantern>())
-        {
-            return;
-        }
-        float currentWeight = _animator.GetLayerWeight(AnimatorLayerIndexes.Lantern);
-        bool equipping = _equippedLantern && currentWeight < 1, unequipping = !_equippedLantern && currentWeight > 0;
-        if (!equipping && !unequipping)
-        {
-            _equippedLantern = !_equippedLantern;
-            if (_equippedLantern)
-                _lantern.SetActive(true);
-            else
-                _lantern.SetActive(false);
         }
     }
 
@@ -145,11 +87,6 @@ public class Player : Character
         }
     }
 
-    protected override void DoStay()
-    {
-        _body.velocity = Vector3.zero;
-    }
-
     protected virtual bool HasPrimary<T>() where T : PrimaryItem
     {
         return _primaryItems.Any(item => item is T);
@@ -196,7 +133,12 @@ public class Player : Character
 
     public virtual void Killed()
     {
-        _animator.SetTrigger("Die");
         _dead = true;
+        _animator.SetDying();
+    }
+
+    public virtual void ToggleLantern()
+    {
+        _animator.ToggleLantern();
     }
 }

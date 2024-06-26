@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,27 +7,46 @@ using Utils;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : Character
 {
+    [Header("Patrol")]
     [SerializeField] protected List<Transform> _patrolNodes = new();
+    [SerializeField] protected bool _randomPatrol = false;
     [SerializeField] protected float _patrolMinIdleTime = 2f;
     [SerializeField] protected float _patrolMaxIdleTime = 5f;
     [SerializeField] protected float _patrolNodeChangeDistance = 0.1f;
-    [SerializeField] protected bool _randomPatrol = false;
+    [Header("States")]
+    [Header("Alert")]
     [SerializeField] protected float _alertSightMaxTime = 1f;
     [SerializeField] protected float _alertHeardMaxTime = 3f;
-    [SerializeField] protected float _chaseMinDistance = 2f;
     [SerializeField] protected float _searchMaxTime = 10f;
-    [SerializeField] protected float _boundedMaxTime = 15f;
-    [SerializeField] protected ActionZone _weakZone;
+    [Header("Chasing")]
+    [SerializeField] protected float _chaseMinDistance = 2f;
+    [Header("Bounded")]
     [SerializeField] protected GameObject _bounded;
+    [SerializeField] protected ActionZone _weakZone;
+    [SerializeField] protected float _boundedMaxTime = 15f;
     protected float _alertTime = 0f;
     protected float _searchTime = 0f;
     protected float _randomMaxIdleTime = 0f;
     protected float _idleTime = 0f;
     protected float _boundedTime = 0f;
     protected Transform _currentNode;
-    protected EnemyState _state;
+    protected IUpdateState<Enemy> _state;
     protected PerceptionMark _lastHeard;
+    public virtual PerceptionMark LastHeard
+    {
+        get
+        {
+            return _lastHeard;
+        }
+    }
     protected PerceptionMark _lastSight;
+    public virtual PerceptionMark LastSight
+    {
+        get
+        {
+            return _lastSight;
+        }
+    }
 
     protected override void Awake()
     {
@@ -41,42 +59,15 @@ public class Enemy : Character
         SetState(Unaware.Instance);
     }
 
-    protected override void DoStay()
-    {
-        _agent.isStopped = true;
-    }
-
     protected virtual void Update()
     {
-        if (_lastSight != null)
-        {
-            _state.SightUpdate(this);
-        }
-        else if (_lastHeard != null)
-        {
-            _state.HeardUpdate(this);
-        }
-        else
-        {
-            _state.IdleUpdate(this);
-        }
         _state.Update(this);
     }
 
-    protected virtual void FixedUpdate()
+    protected override void FixedUpdate()
     {
-        if (_lastSight != null)
-        {
-            _state.SightFixedUpdate(this);
-        }
-        else if (_lastHeard != null)
-        {
-            _state.HeardFixedUpdate(this);
-        }
-        else
-        {
-            _state.IdleFixedUpdate(this);
-        }
+        base.FixedUpdate();
+        _state.FixedUpdate(this);
     }
 
 
@@ -207,7 +198,7 @@ public class Enemy : Character
         sightDirection.y = 0;
         transform.rotation = Quaternion.LookRotation(sightDirection);
         
-        _eyes.transform.LookAt(_lastSight.transform);
+        Eyes.transform.LookAt(_lastSight.transform);
         _alertTime += Time.deltaTime;
         return _alertTime >= _alertSightMaxTime;
     }
@@ -230,7 +221,6 @@ public class Enemy : Character
         {
             return;
         }
-        _lastHeard.Pause();
         _target = _lastHeard.transform;
         if ((_target.position - transform.position).sqrMagnitude < Mathf.Pow(1, 2))
         {
@@ -273,7 +263,7 @@ public class Enemy : Character
                     transform.forward = player.transform.position - transform.position;
                     if (!player.IsDead)
                     {
-                        _animator.SetTrigger("Attack");
+                        _animator.SetAction("Attack");
                         player.Killed();
                     }
                 }

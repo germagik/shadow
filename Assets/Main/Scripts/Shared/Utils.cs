@@ -2,34 +2,17 @@ using UnityEngine;
 
 namespace Utils
 {
-    public static class AnimatorParametersNames
+    #region Classes
+    public static class ActionsUtils
     {
-        public static readonly string DirectionX = "DirectionX";
-        public static readonly string DirectionY = "DirectionY";
-        internal static readonly string IsRunning = "IsRunning";
-        internal static readonly string IsCrouching = "IsCrouching";
-        internal static readonly string IsMoving = "IsMoving";
+        public static void Noop()
+        {
+        }
+        public static void Noop1<P>(P _)
+        {
+        }
     }
-
-    public static class AnimatorLayerIndexes
-    {
-        public static readonly int Base = 0;
-        public static readonly int Lantern = 1;
-    }
-
-    public enum InputAxesNames
-    {
-        Horizontal,
-        Vertical,
-        CameraX,
-        CameraY,
-        Run,
-        Crouch,
-        Lantern,
-        PrimaryAction,
-        Confine
-    }
-
+    
     public static class SurfaceSoundNames
     {
         public static readonly string Default = "Default";
@@ -60,4 +43,57 @@ namespace Utils
             return layerMask == (layerMask | (1 << layer));
         }
     }
+    #endregion
+
+    #region Interfaces
+    public interface IUpdateState<T>
+    {
+        void OnIn(T reference);
+        void OnOut(T reference);
+        void Update(T reference);
+
+        void FixedUpdate(T reference);
+    }
+    #endregion
+
+    #region Enums
+    public enum AnimatorLayerIndexes
+    {
+        Base,
+        Lantern
+    }
+    public enum AnimatorParametersNames
+    {
+        DirectionX,
+        DirectionY,
+        IsRunning,
+        IsCrouching,
+        IsMoving,
+        Action
+    }
+    public enum PlayerActionsNames
+    {
+        Die,
+        Confine,
+        Exorcise
+    }
+
+    public enum EnemyActionsNames
+    {
+        Die,
+        Attack
+    }
+    public enum InputAxesNames
+    {
+        Horizontal,
+        Vertical,
+        CameraX,
+        CameraY,
+        Run,
+        Crouch,
+        Lantern,
+        PrimaryAction,
+        Confine
+    }
+    #endregion
 }

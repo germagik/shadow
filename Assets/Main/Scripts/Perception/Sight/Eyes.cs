@@ -95,11 +95,6 @@ public class Eyes : Sense
         }
     }
 
-    protected override void OnFirstSense(PerceptionMark mark)
-    {
-        _character.OnSight(mark);
-    }
-
     protected virtual void OnDrawGizmos()
     {
         foreach (SightZone zone in _sightZones)

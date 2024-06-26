@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// TP2: Facundo Campos
 [RequireComponent(typeof(AudioSource))]
 public class Sound : MonoBehaviour
 {

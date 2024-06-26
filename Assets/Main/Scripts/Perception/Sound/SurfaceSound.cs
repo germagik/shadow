@@ -1,7 +1,8 @@
 using UnityEngine;
 using Utils;
 
-public class Surface : MonoBehaviour
+// TP2: Facundo Campos
+public class SurfaceSound : MonoBehaviour
 {
     [SerializeField] protected string _soundReference = SurfaceSoundNames.Default;
     public string SoundReference

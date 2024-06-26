@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Utils;
 
-public abstract class EnemyState
+public abstract class EnemyState : IUpdateState<Enemy>
 {
     private static readonly List<EnemyState> _instances = new();
     protected static T Instance<T>() where T : EnemyState, new()
@@ -17,6 +18,45 @@ public abstract class EnemyState
     protected EnemyState()
     {
 
+    }
+
+    public virtual void OnIn(Enemy enemy)
+    {
+    }
+
+    public virtual void OnOut(Enemy enemy)
+    {
+    }
+    public virtual void Update(Enemy enemy)
+    {
+        if (enemy.LastSight != null)
+        {
+            SightUpdate(enemy);
+        }
+        else if (enemy.LastHeard != null)
+        {
+            HeardUpdate(enemy);
+        }
+        else
+        {
+            IdleUpdate(enemy);
+        }
+    }
+
+    public void FixedUpdate(Enemy enemy)
+    {
+        if (enemy.LastSight != null)
+        {
+            SightFixedUpdate(enemy);
+        }
+        else if (enemy.LastHeard != null)
+        {
+            HeardFixedUpdate(enemy);
+        }
+        else
+        {
+            IdleFixedUpdate(enemy);
+        }
     }
 
     public virtual void HeardFixedUpdate(Enemy enemy)
@@ -44,18 +84,4 @@ public abstract class EnemyState
 
     }
 
-    public virtual void Update(Enemy enemy)
-    {
-        
-    }
-
-    public virtual void OnIn(Enemy enemy)
-    {
-
-    }
-
-    public virtual void OnOut(Enemy enemy)
-    {
-        
-    }
 }

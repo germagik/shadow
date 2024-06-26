@@ -1,5 +1,7 @@
 
 
+using UnityEngine;
+
 public class Bounded : EnemyState
 {
     public static Bounded Instance

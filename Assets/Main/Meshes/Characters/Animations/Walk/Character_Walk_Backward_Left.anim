@@ -33616,14 +33616,14 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.21666667
-    functionName: OnStep
+    functionName: TriggerOnStep
     data: LeftWalk
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.6166667
-    functionName: OnStep
+    functionName: TriggerOnStep
     data: RightWalk
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

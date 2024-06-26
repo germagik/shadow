@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class Alert : EnemyState
 {
     public static Alert Instance
@@ -19,14 +17,24 @@ public class Alert : EnemyState
     public override void SightUpdate(Enemy enemy)
     {
         base.SightUpdate(enemy);
-        Debug.Log("Chasing");
         enemy.SetState(Chasing.Instance);
     }
 
     public override void IdleUpdate(Enemy enemy)
     {
         base.IdleUpdate(enemy);
-        Debug.Log("Unaware");
         enemy.SetState(Unaware.Instance);
+    }
+
+    public override void OnIn(Enemy enemy)
+    {
+        base.OnIn(enemy);
+        enemy.LastHeard?.Pause();
+    }
+
+    public override void OnOut(Enemy enemy)
+    {
+        base.OnOut(enemy);
+        enemy.LastHeard?.Resume();
     }
 }
