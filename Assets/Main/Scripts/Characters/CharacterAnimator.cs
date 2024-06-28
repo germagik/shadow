@@ -20,6 +20,7 @@ public class CharacterAnimator : MonoBehaviour
     #region Inner Properties
     protected Animator _animator;
     public event Action<string, string> OnStep;
+    public event Action<string> OnActionKeyEvent;
     protected bool _equippedLantern = false;
     protected float _stepsTimer = 0;
     protected float _leftFootStepsTimer = 0;
@@ -109,6 +110,11 @@ public class CharacterAnimator : MonoBehaviour
             }
         }
     }
+
+    public virtual void ActionKeyEvent(string eventName)
+    {
+        OnActionKeyEvent(eventName);
+    }
     #endregion
 
     #region Triggers
@@ -155,9 +161,12 @@ public class CharacterAnimator : MonoBehaviour
         _animator.SetTrigger("Die");
     }
 
-    public virtual void SetAction(string action)
+    public virtual void TriggerAction(int actionIndex, Action<string> Callback)
     {
-        _animator.SetTrigger(action);
+        OnActionKeyEvent = null;
+        OnActionKeyEvent += Callback;
+        _animator.SetFloat(AnimatorParametersNames.ActionIndex.ToString(), actionIndex);
+        _animator.SetTrigger(AnimatorParametersNames.Action.ToString());
     }
     #endregion
 }

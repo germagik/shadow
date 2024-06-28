@@ -69,19 +69,18 @@ namespace Utils
         IsRunning,
         IsCrouching,
         IsMoving,
+        ActionIndex,
         Action
     }
     public enum PlayerActionsNames
     {
-        Die,
-        Confine,
+        Confine = 1,
         Exorcise
     }
 
     public enum EnemyActionsNames
     {
-        Die,
-        Attack
+        Attack = 1
     }
     public enum InputAxesNames
     {

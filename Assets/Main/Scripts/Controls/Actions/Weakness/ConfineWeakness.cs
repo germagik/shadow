@@ -1,13 +1,20 @@
 
+using System;
+
 public class ConfineWeakness : Weakness<Confine>
 {
-    public override bool CanBeActionatedBy(Player player)
+    public override void ActionatedBy(Player player, Action<string> Callback)
     {
-        return base.CanBeActionatedBy(player) && player.IsCrouching;
+        player.CastSpell<Confine>(Callback + OnActionEvent);
     }
 
-    public override void ActionatedBy(Player player)
+    protected virtual void OnActionEvent(string eventName)
     {
-        _enemy.SetState(Bounded.Instance);
+        switch (eventName)
+        {
+            case "Success":
+                _enemy.SetState(Bounded.Instance);
+                break;
+        }
     }
 }

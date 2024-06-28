@@ -90,6 +90,10 @@ public class Enemy : Character
 
     public virtual void SetState(EnemyState state)
     {
+        if (state == _state)
+        {
+            return;
+        }
         _state?.OnOut(this);
         _state = state;
         _state.OnIn(this);
@@ -263,7 +267,7 @@ public class Enemy : Character
                     transform.forward = player.transform.position - transform.position;
                     if (!player.IsDead)
                     {
-                        _animator.SetAction("Attack");
+                        _animator.TriggerAction((int)EnemyActionsNames.Attack, ActionsUtils.Noop1);
                         player.Killed();
                     }
                 }
@@ -320,7 +324,8 @@ public class Enemy : Character
         }
     }
 
-    public void OnDrawGizmos() {
+    public void OnDrawGizmos()
+    {
         Gizmos.color = Color.green;
         Gizmos.DrawLine(transform.position + (Vector3.up * 2), transform.position + _direction + (Vector3.up * 2));
         Gizmos.DrawSphere(transform.position + _direction * 1.5f + (Vector3.up * 2), 0.1f);

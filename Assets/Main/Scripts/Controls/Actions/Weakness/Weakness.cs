@@ -6,7 +6,6 @@ public abstract class Weakness<T> : ActionZone where T : Spell
 
     public override bool CanBeActionatedBy(Player player)
     {
-        // return base.CanBeActionatedBy(player) && player.HasSpell<T>() && player.GetSpell<T>().CanBeCastedBy(player);
-        return true;
+        return base.CanBeActionatedBy(player) && player.HasSpell<T>() && player.GetSpell<T>().CanBeCastedBy(player);
     }
 }

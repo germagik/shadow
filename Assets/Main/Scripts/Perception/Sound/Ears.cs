@@ -1,7 +1,6 @@
 using System.Linq;
 using UnityEngine;
 
-// TP2: Facundo Campos
 public class Ears : Sense
 {
     public virtual bool HasHeard

@@ -1,11 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class Player : Character
 {
-    protected List<Item> _items = new();
-    protected List<PrimaryItem> _primaryItems = new();
+    [SerializeField] protected List<Item> _items = new();
+    [SerializeField] protected List<PrimaryItem> _primaryItems = new();
     protected bool _grabbed = false;
     public bool IsGrabbed
     {
@@ -23,7 +24,7 @@ public class Player : Character
         }
     }
 
-    public virtual void CastSpell<T>() where T : Spell
+    public virtual void CastSpell<T>(Action<string> Callback) where T : Spell
     {
         if (!HasSpell<T>())
         {
@@ -32,7 +33,7 @@ public class Player : Character
         Spell spell = GetSpell<T>();
         if (spell.CanBeCastedBy(this))
         {
-            spell.CastedBy(this);
+            spell.CastedBy(this, Callback);
         }
     }
 
@@ -141,4 +142,5 @@ public class Player : Character
     {
         _animator.ToggleLantern();
     }
+
 }

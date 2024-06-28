@@ -39,13 +39,15 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Inner Properties
-    protected Camera _camera;
     protected Player _player;
-    protected float _verticalRotation = 0f;
-    protected float _spineVerticalRotation = 0f;
+    protected Camera _camera;
     protected ActionZone _aimedAction;
+    protected ActionZone _engagedAction;
     protected Action StateUpdate;
     protected Action StateFixedUpdate;
+    protected float _verticalRotation = 0f;
+    protected float _spineVerticalRotation = 0f;
+    protected bool _isActionating = false;
     #endregion
 
     #region Lifecycle Handlers
@@ -109,7 +111,7 @@ public class PlayerController : MonoBehaviour
                 UIController.Instance.SetHint(_aimedAction.Hint);
                 if (Input.GetAxisRaw(_aimedAction.AxisName.ToString()) != 0)
                 {
-                    ToGoingToState();
+                    ToGoingToActionState();
                 }
             }
             else
@@ -197,20 +199,22 @@ public class PlayerController : MonoBehaviour
         MoveFixedUpdate();
     }
 
-    protected virtual void GoingToTargetFixedUpdate()
+    protected virtual void GoingToActionFixedUpdate()
     {
         CrouchingFixedUpdate();
-        if (!(_aimedAction != null && _aimedAction.CanBeActionatedBy(_player)))
+        if (!(_engagedAction != null && _engagedAction.CanBeActionatedBy(_player)))
         {
             _player.Stay();
             ToPlayerControlState();
             return;
         }
-        if ((_aimedAction.transform.position - transform.position).sqrMagnitude <= Mathf.Pow(_aimedAction.RequiredDistance, 2))
+        _camera.transform.LookAt(_engagedAction.transform.position);
+        _player.FaceTo(_engagedAction.transform.position, Time.fixedDeltaTime);
+        if ((_engagedAction.transform.position - transform.position).sqrMagnitude <= Mathf.Pow(_engagedAction.RequiredDistance, 2))
         {
-            _aimedAction.ActionatedBy(_player);
+            _engagedAction.ActionatedBy(_player, OnActionEvent);
             _player.Stay();
-            ToPlayerControlState();
+            ToActionatingState();
             return;
         }
         if (_player.IsCrouching)
@@ -220,6 +224,21 @@ public class PlayerController : MonoBehaviour
         else
         {
             _player.Walk();
+        }
+    }
+
+    protected virtual void ActionatingUpdate()
+    {
+        if (_engagedAction?.gameObject.activeSelf == true)
+        {
+            _camera.transform.LookAt(_engagedAction.transform.position);
+            // _spine.forward = _engagedAction.transform.position - _spine.transform.position;
+        }
+        if (!_isActionating)
+        {
+            _player.Stay();
+            ToPlayerControlState();
+            return;
         }
     }
     #endregion
@@ -251,14 +270,38 @@ public class PlayerController : MonoBehaviour
     #region State Transitions
     protected void ToPlayerControlState()
     {
+        _engagedAction = null;
+        _isActionating = false;
+        _player.SetTarget(null);
         StateUpdate = PlayerControlUpdate;
         StateFixedUpdate = PlayerControlFixedUpdate;
     }
 
-    protected void ToGoingToState()
+    protected void ToGoingToActionState()
     {
+        _engagedAction = _aimedAction;
+        _player.SetTarget(_engagedAction.transform);
         StateUpdate = ActionsUtils.Noop;
-        StateFixedUpdate = GoingToTargetFixedUpdate;
+        StateFixedUpdate = GoingToActionFixedUpdate;
+    }
+
+    protected void ToActionatingState()
+    {
+        _isActionating = true;
+        StateUpdate = ActionatingUpdate;
+        StateFixedUpdate = ActionsUtils.Noop;
+    }
+    #endregion
+
+    #region Event Listeners
+    protected virtual void OnActionEvent(string eventName)
+    {
+        switch (eventName)
+        {
+            case "Done":
+                _isActionating = false;
+                break;
+        }
     }
     #endregion
 }

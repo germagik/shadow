@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 
 public class ExorcismWeakness : Weakness<Exorcism>
@@ -13,7 +14,7 @@ public class ExorcismWeakness : Weakness<Exorcism>
         }
     }
 
-    public override void ActionatedBy(Player player)
+    public override void ActionatedBy(Player player, Action<string> Callback)
     {
         if (_duration < _maxDuration)
         {
@@ -23,6 +24,7 @@ public class ExorcismWeakness : Weakness<Exorcism>
         {
             _enemy.gameObject.SetActive(false);
         }
+        Callback("Done");
     }
 
 }

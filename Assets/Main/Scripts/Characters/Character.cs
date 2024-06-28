@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using Utils;
 
-// TP2: Germán Velázquez
-// + Subclases
 [RequireComponent(typeof(Rigidbody))]
 public abstract class Character : MonoBehaviour
 {
@@ -35,6 +33,13 @@ public abstract class Character : MonoBehaviour
     
     #region Inner Properties
     protected CharacterAnimator _animator;
+    public virtual CharacterAnimator Animator
+    {
+        get
+        {
+            return _animator;
+        }
+    }
     protected bool _isCrouching = false;
     public virtual bool IsCrouching 
     {
@@ -46,7 +51,6 @@ public abstract class Character : MonoBehaviour
     #region Pathfinding
     protected NavMeshAgent _agent;
     protected Transform _target;
-    private Vector3 _lastDestination;
     private Vector3 _deltaDirection;
     private Vector3 _lastPosition;
     protected Vector3 _direction;
@@ -137,11 +141,10 @@ public abstract class Character : MonoBehaviour
     #endregion
 
     #region Pathfinding
-    public virtual void SetDirection(Vector3 direction)
+    public virtual void SetTarget(Transform target)
     {
-        _direction = direction.normalized;
+        _target = target;
     }
-
     protected virtual void StartPathFinding()
     {
         StartCoroutine(PathFindingRoutine());
@@ -150,10 +153,9 @@ public abstract class Character : MonoBehaviour
     protected virtual IEnumerator PathFindingRoutine()
     {
         SetDirection(_deltaDirection);
-        if (_target != null && _target.position != _lastDestination)
+        if (_target != null)
         {
             _agent.SetDestination(_target.position);
-            _lastDestination = _target.position;
         }
         yield return new WaitForSeconds(_pathFindingInterval);
         StartPathFinding();
@@ -161,6 +163,10 @@ public abstract class Character : MonoBehaviour
     #endregion
 
     #region ArtificialUpdates
+    public virtual void SetDirection(Vector3 direction)
+    {
+        _direction = direction.normalized;
+    }
     protected virtual void Move(float maxVelocity, float acceleration, bool isRunning = false, bool isCrouching = false)
     {
         _animator.SetMotion(true, isRunning, isCrouching);
@@ -223,6 +229,23 @@ public abstract class Character : MonoBehaviour
     {
         _isCrouching = false;
         _animator.SetCrouching(_isCrouching);
+    }
+
+    public virtual bool FaceTo(Vector3 position, float delta)
+    {
+        bool isFacingTo = IsFacingTo(position);
+        if (!isFacingTo)
+        {
+            transform.forward = Vector3.Lerp(transform.forward, position - transform.position, delta);
+        }
+        return isFacingTo;
+    }
+    #endregion
+
+    #region Utilities
+    public virtual bool IsFacingTo(Vector3 position)
+    {
+        return transform.forward == (position - transform.position).normalized;
     }
     #endregion
 }

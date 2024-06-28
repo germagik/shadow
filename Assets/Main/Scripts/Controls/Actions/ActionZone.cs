@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Utils;
 public abstract class ActionZone : MonoBehaviour
@@ -45,7 +46,7 @@ public abstract class ActionZone : MonoBehaviour
             return _requiredDistance;
         }
     }
-    public abstract void ActionatedBy(Player player);
+    public abstract void ActionatedBy(Player player, Action<string> Callback);
     public virtual bool CanBeActionatedBy(Player player)
     {
         return true;

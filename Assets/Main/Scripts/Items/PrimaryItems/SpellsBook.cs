@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Items/SpellsBook")]
 public class SpellsBook : PrimaryItem
 {
-    protected List<SpellPage> _pages = new ();
+    [SerializeField] protected List<SpellPage> _pages = new ();
 
     public virtual void Add(SpellPage spellPage)
     {
@@ -15,7 +15,7 @@ public class SpellsBook : PrimaryItem
 
     public virtual bool HasSpell<T>() where T : Spell
     {
-        return _pages.Any(page => page is T);
+        return _pages.Any(page => page.Spell is T);
     }
 
     public virtual Spell GetSpell<T>() where T : Spell

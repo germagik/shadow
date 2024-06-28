@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-// TP2: Facundo Campos
+
 public class SoundEmitter : MonoBehaviour
 {
     [SerializeField] protected List<SoundConfiguration> _soundConfigurations;
